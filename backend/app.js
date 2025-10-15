@@ -8,6 +8,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const cors = require('cors');
 
 // MongoDB connection
 const connectDB = require('./config/database');
@@ -39,6 +40,14 @@ app.set('views', path.join(__dirname, 'views'));
 // ============================================
 // MIDDLEWARE CONFIGURATION
 // ============================================
+
+// CORS Configuration - Allow Angular frontend access
+app.use(cors({
+    origin: 'http://localhost:4200',  // Angular dev server
+    credentials: true,                 // Allow cookies/sessions
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

@@ -1,0 +1,90 @@
+<div class="container my-5 py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="card-title mb-0 text-center">User Login</h3>
+        </div>
+        <div class="card-body">
+          <!-- Success Message -->
+          @if (successMessage) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ successMessage }}
+              <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Close"></button>
+            </div>
+          }
+
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+            </div>
+          }
+
+          <!-- Login Form -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address *</label>
+              <input
+                type="email"
+                class="form-control"
+                [class.is-invalid]="hasError('email')"
+                id="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                autocomplete="email">
+              @if (hasError('email')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('email') }}
+                </div>
+              }
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password *</label>
+              <input
+                type="password"
+                class="form-control"
+                [class.is-invalid]="hasError('password')"
+                id="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                autocomplete="current-password">
+              @if (hasError('password')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('password') }}
+                </div>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="isLoading">
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Logging in...
+                } @else {
+                  Login
+                }
+              </button>
+            </div>
+          </form>
+
+          <!-- Register Link -->
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              Don't have an account?
+              <a routerLink="/register" class="text-decoration-none">Register here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

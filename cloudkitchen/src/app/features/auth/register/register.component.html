@@ -1,0 +1,194 @@
+<div class="container my-5 py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="card-title mb-0 text-center">User Registration</h3>
+        </div>
+        <div class="card-body">
+          <!-- Success Message -->
+          @if (successMessage) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ successMessage }}
+              <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Close"></button>
+            </div>
+          }
+
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+            </div>
+          }
+
+          <!-- Registration Form -->
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Full Name -->
+            <div class="mb-3">
+              <label for="fullname" class="form-label">Full Name *</label>
+              <input
+                type="text"
+                class="form-control"
+                [class.is-invalid]="hasError('fullname')"
+                [class.is-valid]="f['fullname'].valid && f['fullname'].touched"
+                id="fullname"
+                formControlName="fullname"
+                placeholder="Enter your full name"
+                autocomplete="name">
+              @if (hasError('fullname')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('fullname') }}
+                </div>
+              }
+              <small class="form-text text-muted">Only letters, spaces, hyphens and apostrophes allowed</small>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address *</label>
+              <input
+                type="email"
+                class="form-control"
+                [class.is-invalid]="hasError('email')"
+                [class.is-valid]="f['email'].valid && f['email'].touched"
+                id="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                autocomplete="email">
+              @if (hasError('email')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('email') }}
+                </div>
+              }
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password *</label>
+              <input
+                type="password"
+                class="form-control"
+                [class.is-invalid]="hasError('password')"
+                [class.is-valid]="f['password'].valid && f['password'].touched"
+                id="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                autocomplete="new-password">
+              @if (hasError('password')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('password') }}
+                </div>
+              }
+
+              <!-- Password Strength Indicator -->
+              <div class="password-requirements mt-2">
+                <small class="form-text text-muted">Password must contain:</small>
+                <ul class="password-checklist small">
+                  <li [class.text-success]="passwordChecks.length" [class.text-danger]="!passwordChecks.length">
+                    {{ passwordChecks.length ? '✓' : '✗' }} At least 8 characters
+                  </li>
+                  <li [class.text-success]="passwordChecks.uppercase" [class.text-danger]="!passwordChecks.uppercase">
+                    {{ passwordChecks.uppercase ? '✓' : '✗' }} One uppercase letter
+                  </li>
+                  <li [class.text-success]="passwordChecks.lowercase" [class.text-danger]="!passwordChecks.lowercase">
+                    {{ passwordChecks.lowercase ? '✓' : '✗' }} One lowercase letter
+                  </li>
+                  <li [class.text-success]="passwordChecks.number" [class.text-danger]="!passwordChecks.number">
+                    {{ passwordChecks.number ? '✓' : '✗' }} One number
+                  </li>
+                  <li [class.text-success]="passwordChecks.special" [class.text-danger]="!passwordChecks.special">
+                    {{ passwordChecks.special ? '✓' : '✗' }} One special character (!@#$%^&*(),.?":{{ '{' }}{{ '}' }}|&lt;&gt;)
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password *</label>
+              <input
+                type="password"
+                class="form-control"
+                [class.is-invalid]="hasError('confirmPassword')"
+                [class.is-valid]="f['confirmPassword'].valid && f['confirmPassword'].touched"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                autocomplete="new-password">
+              @if (hasError('confirmPassword')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('confirmPassword') }}
+                </div>
+              }
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number *</label>
+              <input
+                type="tel"
+                class="form-control"
+                [class.is-invalid]="hasError('phone')"
+                [class.is-valid]="f['phone'].valid && f['phone'].touched"
+                id="phone"
+                formControlName="phone"
+                placeholder="Enter your phone number"
+                autocomplete="tel">
+              @if (hasError('phone')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('phone') }}
+                </div>
+              }
+              <small class="form-text text-muted">Australian format: +61 or 0X XXXX XXXX, (XX) XXXX XXXX</small>
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+              <label for="role" class="form-label">Role *</label>
+              <select
+                class="form-select"
+                [class.is-invalid]="hasError('role')"
+                [class.is-valid]="f['role'].valid && f['role'].touched"
+                id="role"
+                formControlName="role">
+                <option value="">Select your role</option>
+                <option value="admin">Admin</option>
+                <option value="chef">Chef</option>
+                <option value="manager">Manager</option>
+              </select>
+              @if (hasError('role')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('role') }}
+                </div>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="isLoading">
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Registering...
+                } @else {
+                  Register
+                }
+              </button>
+            </div>
+          </form>
+
+          <!-- Login Link -->
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              Already have an account?
+              <a routerLink="/login" class="text-decoration-none">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
