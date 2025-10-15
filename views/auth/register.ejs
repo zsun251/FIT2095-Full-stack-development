@@ -1,0 +1,250 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0 text-center">User Registration</h3>
+                </div>
+                <div class="card-body">
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= error %>
+                        </div>
+                    <% } %>
+
+                    <form id="registrationForm" action="/register" method="POST" novalidate>
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname"
+                                   value="<%= typeof formData !== 'undefined' ? formData.fullname || '' : '' %>" required>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Only letters, spaces, hyphens and apostrophes allowed</small>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="invalid-feedback"></div>
+                            <div class="password-requirements mt-2">
+                                <small class="form-text text-muted">Password must contain:</small>
+                                <ul class="password-checklist small text-muted">
+                                    <li id="length-check">At least 8 characters</li>
+                                    <li id="uppercase-check">One uppercase letter</li>
+                                    <li id="lowercase-check">One lowercase letter</li>
+                                    <li id="number-check">One number</li>
+                                    <li id="special-check">One special character (!@#$%^&*(),.?":{}|<>)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   value="<%= typeof formData !== 'undefined' ? formData.phone || '' : '' %>" required>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Australian format: +61 or 0X XXXX XXXX, (XX) XXXX XXXX</small>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role *</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select your role</option>
+                                <option value="admin" <%= typeof formData !== 'undefined' && formData.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                <option value="chef" <%= typeof formData !== 'undefined' && formData.role === 'chef' ? 'selected' : '' %>>Chef</option>
+                                <option value="manager" <%= typeof formData !== 'undefined' && formData.role === 'manager' ? 'selected' : '' %>>Manager</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Already have an account? <a href="/login" class="text-decoration-none">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const fullname = document.getElementById('fullname');
+    const email = document.getElementById('email');
+    const phone = document.getElementById('phone');
+    const role = document.getElementById('role');
+
+    // Password strength indicators
+    const passwordChecks = {
+        length: document.getElementById('length-check'),
+        uppercase: document.getElementById('uppercase-check'),
+        lowercase: document.getElementById('lowercase-check'),
+        number: document.getElementById('number-check'),
+        special: document.getElementById('special-check')
+    };
+
+    // Real-time password validation
+    password.addEventListener('input', function() {
+        const value = this.value;
+
+        // Length check
+        updateCheckItem(passwordChecks.length, value.length >= 8);
+
+        // Uppercase check
+        updateCheckItem(passwordChecks.uppercase, /[A-Z]/.test(value));
+
+        // Lowercase check
+        updateCheckItem(passwordChecks.lowercase, /[a-z]/.test(value));
+
+        // Number check
+        updateCheckItem(passwordChecks.number, /\d/.test(value));
+
+        // Special character check
+        updateCheckItem(passwordChecks.special, /[!@#$%^&*(),.?":{}|<>]/.test(value));
+
+        // Validate password field
+        validatePassword();
+    });
+
+    function updateCheckItem(element, isValid) {
+        if (isValid) {
+            element.classList.remove('text-danger');
+            element.classList.add('text-success');
+            element.innerHTML = '✓ ' + element.innerHTML.replace(/[✗✓] /, '');
+        } else {
+            element.classList.remove('text-success');
+            element.classList.add('text-danger');
+            element.innerHTML = '✗ ' + element.innerHTML.replace(/[✗✓] /, '');
+        }
+    }
+
+    // Form validation functions
+    function validatePassword() {
+        const value = password.value;
+        const hasUpper = /[A-Z]/.test(value);
+        const hasLower = /[a-z]/.test(value);
+        const hasNumber = /\d/.test(value);
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+        const isLongEnough = value.length >= 8;
+
+        const isValid = hasUpper && hasLower && hasNumber && hasSpecial && isLongEnough;
+
+        setFieldValidation(password, isValid, 'Password must meet all requirements');
+        return isValid;
+    }
+
+    function validateConfirmPassword() {
+        const isValid = confirmPassword.value === password.value && confirmPassword.value.length > 0;
+        setFieldValidation(confirmPassword, isValid, 'Passwords do not match');
+        return isValid;
+    }
+
+    function validateFullname() {
+        const value = fullname.value.trim();
+        const isValid = value.length >= 2 && value.length <= 100 && /^[a-zA-Z\s\-']+$/.test(value);
+        setFieldValidation(fullname, isValid, 'Full name must be 2-100 characters and contain only letters, spaces, hyphens, and apostrophes');
+        return isValid;
+    }
+
+    function validateEmail() {
+        const value = email.value.trim();
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        setFieldValidation(email, isValid, 'Please enter a valid email address');
+        return isValid;
+    }
+
+    function validatePhone() {
+        const value = phone.value.trim();
+        const isValid = /^\+61[- ]?[2-9]\d{8}$/.test(value) ||
+                       /^0[2-9]\d{8}$/.test(value) ||
+                       /^\([0-9]{2}\)[- ]?\d{4}[- ]?\d{4}$/.test(value);
+        setFieldValidation(phone, isValid, 'Please enter a valid Australian phone number');
+        return isValid;
+    }
+
+    function validateRole() {
+        const isValid = role.value !== '';
+        setFieldValidation(role, isValid, 'Please select a role');
+        return isValid;
+    }
+
+    function setFieldValidation(field, isValid, errorMessage) {
+        if (isValid) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        } else if (field.value.length > 0 || field === role) {
+            field.classList.remove('is-valid');
+            field.classList.add('is-invalid');
+            const feedback = field.parentNode.querySelector('.invalid-feedback');
+            if (feedback) {
+                feedback.textContent = errorMessage;
+            }
+        } else {
+            field.classList.remove('is-valid', 'is-invalid');
+        }
+    }
+
+    // Add event listeners for real-time validation
+    confirmPassword.addEventListener('input', validateConfirmPassword);
+    fullname.addEventListener('input', validateFullname);
+    email.addEventListener('input', validateEmail);
+    phone.addEventListener('input', validatePhone);
+    role.addEventListener('change', validateRole);
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const isPasswordValid = validatePassword();
+        const isConfirmPasswordValid = validateConfirmPassword();
+        const isFullnameValid = validateFullname();
+        const isEmailValid = validateEmail();
+        const isPhoneValid = validatePhone();
+        const isRoleValid = validateRole();
+
+        if (isPasswordValid && isConfirmPasswordValid && isFullnameValid && isEmailValid && isPhoneValid && isRoleValid) {
+            // Remove confirm password from form data (not needed on server)
+            confirmPassword.disabled = true;
+            this.submit();
+        } else {
+            // Show validation errors
+            if (!isPasswordValid) password.focus();
+            else if (!isConfirmPasswordValid) confirmPassword.focus();
+            else if (!isFullnameValid) fullname.focus();
+            else if (!isEmailValid) email.focus();
+            else if (!isPhoneValid) phone.focus();
+            else if (!isRoleValid) role.focus();
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

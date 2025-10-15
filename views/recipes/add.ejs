@@ -1,0 +1,158 @@
+<%- include('../partials/header', {title: title}) %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2 class="text-center mb-0">
+                        <% if (recipe) { %>Edit Recipe<% } else { %>Add New Recipe<% } %>
+                    </h2>
+                </div>
+
+                <!-- Error Display -->
+                <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <% } %>
+
+                <div class="form-body">
+                    <form action="<% if (recipe) { %>/api/recipes/update-<%= studentId %>/<%= recipe.recipeId %><% } else { %>/api/recipes/add-<%= studentId %><% } %>" method="POST">
+                        
+                        <!-- Basic Information Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Basic Information</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="title" class="form-label required">Recipe Title</label>
+                                    <input type="text" class="form-control" name="title" id="title"
+                                           value="<% if (recipe) { %><%= recipe.title %><% } else if (typeof formData !== 'undefined' && formData && formData.title) { %><%= formData.title %><% } %>"
+                                           placeholder="e.g., Spaghetti Carbonara" required
+                                           minlength="3" maxlength="100">
+                                    <small class="text-muted">3-100 characters, must be unique</small>
+                                    <div class="invalid-feedback" id="title-feedback"></div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="chef" class="form-label required">Chef Name</label>
+                                    <input type="text" class="form-control" name="chef" id="chef"
+                                           value="<% if (recipe) { %><%= recipe.chef %><% } else if (typeof currentChef !== 'undefined' && currentChef) { %><%= currentChef %><% } else if (typeof formData !== 'undefined' && formData && formData.chef) { %><%= formData.chef %><% } %>"
+                                           <% if (!recipe) { %>readonly<% } %>
+                                           placeholder="e.g., Mario Rossi" required
+                                           pattern="[a-zA-Z\s\-']+"
+                                           minlength="2" maxlength="50">
+                                    <small class="text-muted"><% if (!recipe) { %>Auto-filled with your name<% } else { %>2-50 characters, letters, spaces, hyphens and apostrophes only<% } %></small>
+                                    <div class="invalid-feedback" id="chef-feedback"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cuisineType" class="form-label required">Cuisine Type</label>
+                                    <select class="form-select" name="cuisineType" required>
+                                        <option value="">Select cuisine type</option>
+                                        <option value="Italian" <% if ((recipe && recipe.cuisineType === 'Italian') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Italian')) { %>selected<% } %>>Italian</option>
+                                        <option value="Asian" <% if ((recipe && recipe.cuisineType === 'Asian') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Asian')) { %>selected<% } %>>Asian</option>
+                                        <option value="Mexican" <% if ((recipe && recipe.cuisineType === 'Mexican') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Mexican')) { %>selected<% } %>>Mexican</option>
+                                        <option value="American" <% if ((recipe && recipe.cuisineType === 'American') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'American')) { %>selected<% } %>>American</option>
+                                        <option value="French" <% if ((recipe && recipe.cuisineType === 'French') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'French')) { %>selected<% } %>>French</option>
+                                        <option value="Indian" <% if ((recipe && recipe.cuisineType === 'Indian') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Indian')) { %>selected<% } %>>Indian</option>
+                                        <option value="Mediterranean" <% if ((recipe && recipe.cuisineType === 'Mediterranean') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Mediterranean')) { %>selected<% } %>>Mediterranean</option>
+                                        <option value="Other" <% if ((recipe && recipe.cuisineType === 'Other') || (typeof formData !== 'undefined' && formData && formData.cuisineType === 'Other')) { %>selected<% } %>>Other</option>
+                                    </select>
+                                    <small class="text-muted">Choose from predefined cuisine types</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="mealType" class="form-label required">Meal Type</label>
+                                    <select class="form-select" name="mealType" required>
+                                        <option value="">Select meal type</option>
+                                        <option value="Breakfast" <% if ((recipe && recipe.mealType === 'Breakfast') || (typeof formData !== 'undefined' && formData && formData.mealType === 'Breakfast')) { %>selected<% } %>>Breakfast</option>
+                                        <option value="Lunch" <% if ((recipe && recipe.mealType === 'Lunch') || (typeof formData !== 'undefined' && formData && formData.mealType === 'Lunch')) { %>selected<% } %>>Lunch</option>
+                                        <option value="Dinner" <% if ((recipe && recipe.mealType === 'Dinner') || (typeof formData !== 'undefined' && formData && formData.mealType === 'Dinner')) { %>selected<% } %>>Dinner</option>
+                                        <option value="Snack" <% if ((recipe && recipe.mealType === 'Snack') || (typeof formData !== 'undefined' && formData && formData.mealType === 'Snack')) { %>selected<% } %>>Snack</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recipe Details Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Recipe Details</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="prepTime" class="form-label required">Prep Time (minutes)</label>
+                                    <input type="number" class="form-control" name="prepTime"
+                                           min="1" max="480" value="<% if (recipe) { %><%= recipe.prepTime %><% } else if (typeof formData !== 'undefined' && formData && formData.prepTime) { %><%= formData.prepTime %><% } %>"
+                                           placeholder="e.g., 30" required>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="difficulty" class="form-label required">Difficulty Level</label>
+                                    <select class="form-select" name="difficulty" required>
+                                        <option value="">Select difficulty</option>
+                                        <option value="Easy" <% if ((recipe && recipe.difficulty === 'Easy') || (typeof formData !== 'undefined' && formData && formData.difficulty === 'Easy')) { %>selected<% } %>>Easy</option>
+                                        <option value="Medium" <% if ((recipe && recipe.difficulty === 'Medium') || (typeof formData !== 'undefined' && formData && formData.difficulty === 'Medium')) { %>selected<% } %>>Medium</option>
+                                        <option value="Hard" <% if ((recipe && recipe.difficulty === 'Hard') || (typeof formData !== 'undefined' && formData && formData.difficulty === 'Hard')) { %>selected<% } %>>Hard</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="servings" class="form-label required">Servings</label>
+                                    <input type="number" class="form-control" name="servings"
+                                           min="1" max="20" value="<% if (recipe) { %><%= recipe.servings %><% } else if (typeof formData !== 'undefined' && formData && formData.servings) { %><%= formData.servings %><% } %>"
+                                           placeholder="e.g., 4" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Ingredients Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Ingredients</h4>
+                            
+                            <div class="mb-3">
+                                <label for="ingredients" class="form-label required">Ingredients List</label>
+                                <textarea name="ingredients" class="form-control" id="ingredients" rows="4" required
+                                          placeholder="Enter ingredients separated by commas&#10;e.g., 400g spaghetti, 200g pancetta, 4 large eggs, 100g Pecorino Romano, Black pepper"><% if (recipe) { %><%= recipe.ingredients.join(', ') %><% } else if (typeof formData !== 'undefined' && formData && formData.ingredients) { %><%= formData.ingredients %><% } %></textarea>
+                                <small class="text-muted">1-20 ingredients, each at least 3 characters. Separate with commas.</small>
+                                <div class="invalid-feedback" id="ingredients-feedback"></div>
+                                <div class="form-text" id="ingredients-count">0 ingredients</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Instructions Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Instructions</h4>
+                            
+                            <div class="mb-3">
+                                <label for="instructions" class="form-label required">Cooking Instructions</label>
+                                <textarea name="instructions" class="form-control" id="instructions" rows="5" required
+                                          placeholder="Enter cooking steps separated by commas&#10;e.g., Boil salted water for pasta, Cook pancetta until crispy, Whisk eggs with cheese, Combine hot pasta with pancetta, Add egg mixture off heat"><% if (recipe) { %><%= recipe.instructions.join(', ') %><% } else if (typeof formData !== 'undefined' && formData && formData.instructions) { %><%= formData.instructions %><% } %></textarea>
+                                <small class="text-muted">1-15 steps, each at least 10 characters. Separate with commas.</small>
+                                <div class="invalid-feedback" id="instructions-feedback"></div>
+                                <div class="form-text" id="instructions-count">0 steps</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <% if (recipe) { %>Update Recipe<% } else { %>Add Recipe<% } %>
+                            </button>
+                            <a href="/api/recipes-<%= studentId %>" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<%- include('../partials/footer') %>

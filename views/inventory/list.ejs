@@ -1,0 +1,335 @@
+<%- include('../partials/header', {title: title}) %>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-gradient mb-0">
+                    All Inventory Items
+                </h2>
+                <div>
+                    <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-primary">
+                        Add New Item
+                    </a>
+                    <a href="/api/inventory/edit-form-<%= studentId %>" class="btn btn-outline-warning">
+                        Edit Item
+                    </a>
+                    <a href="/api/inventory/delete-form-<%= studentId %>" class="btn btn-outline-danger">
+                        Delete Item
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary">
+                        Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="card shadow-soft rounded-lg">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        Inventory Collection
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <% if (inventory.length === 0) { %>
+                        <div class="text-center py-5">
+                            <h4 class="text-muted">No Inventory Items Found</h4>
+                            <p class="text-muted mb-4">Start building your inventory by adding your first item!</p>
+                            <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-primary">
+                                Add Your First Item
+                            </a>
+                        </div>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0" style="font-size: 0.9rem;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col" class="text-center" style="width: 3%;">#</th>
+                                        <th scope="col" style="width: 18%;">Ingredient Name</th>
+                                        <th scope="col" class="text-center" style="width: 10%;">Quantity & Unit</th>
+                                        <th scope="col" style="width: 10%;">Category</th>
+                                        <th scope="col" style="width: 8%;">Location</th>
+                                        <th scope="col" class="text-center" style="width: 8%;">Cost</th>
+                                        <th scope="col" class="text-center" style="width: 10%;">Purchase Date</th>
+                                        <th scope="col" class="text-center" style="width: 10%;">Expiration Date</th>
+                                        <th scope="col" class="text-center" style="width: 9%;">Created</th>
+                                        <th scope="col" class="text-center" style="width: 14%;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% inventory.forEach((item, index) => { %>
+                                        <tr style="vertical-align: top;">
+                                            <td class="text-center fw-bold text-primary" style="padding: 8px;"><%= index + 1 %></td>
+                                            <td style="padding: 8px;">
+                                                <div class="fw-bold text-dark" style="font-size: 0.85rem;"><%= item.ingredientName %></div>
+                                                <small class="text-muted" style="font-size: 0.7rem;">ID: <%= item.inventoryId || 'Auto-generated' %></small>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <span class="fw-bold" style="font-size: 0.85rem;"><%= item.quantity %></span>
+                                                <span class="badge bg-light text-dark ms-1" style="font-size: 0.7rem;"><%= item.unit %></span>
+                                                <div class="mt-1">
+                                                    <small class="text-muted" style="font-size: 0.65rem;">
+                                                        <% if (item.unit === 'pieces') { %>Pieces<% }
+                                                           else if (item.unit === 'kg') { %>Kilograms<% }
+                                                           else if (item.unit === 'g') { %>Grams<% }
+                                                           else if (item.unit === 'liters') { %>Liters<% }
+                                                           else if (item.unit === 'ml') { %>Milliliters<% }
+                                                           else if (item.unit === 'cups') { %>Cups<% }
+                                                           else if (item.unit === 'tbsp') { %>Tablespoons<% }
+                                                           else if (item.unit === 'tsp') { %>Teaspoons<% }
+                                                           else if (item.unit === 'dozen') { %>Dozen<% }
+                                                           else { %><%= item.unit %><% } %>
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td style="padding: 8px;">
+                                                <span class="badge
+                                                    <% if (item.category === 'Vegetables') { %>bg-success<% }
+                                                       else if (item.category === 'Meat') { %>bg-danger<% }
+                                                       else if (item.category === 'Dairy') { %>bg-info<% }
+                                                       else if (item.category === 'Grains') { %>bg-warning<% }
+                                                       else if (item.category === 'Fruits') { %>bg-success<% }
+                                                       else if (item.category === 'Spices') { %>bg-warning<% }
+                                                       else if (item.category === 'Beverages') { %>bg-primary<% }
+                                                       else if (item.category === 'Frozen') { %>bg-info<% }
+                                                       else if (item.category === 'Canned') { %>bg-secondary<% }
+                                                       else { %>bg-secondary<% } %>" style="font-size: 0.7rem;">
+                                                    <%= item.category %>
+                                                </span>
+                                                <div class="mt-1">
+                                                    <small class="text-muted" style="font-size: 0.65rem;">
+                                                        <% if (item.category === 'Vegetables') { %>Fresh Produce<% }
+                                                           else if (item.category === 'Fruits') { %>Fresh Produce<% }
+                                                           else if (item.category === 'Meat') { %>Protein<% }
+                                                           else if (item.category === 'Dairy') { %>Refrigerated<% }
+                                                           else if (item.category === 'Grains') { %>Pantry Staple<% }
+                                                           else if (item.category === 'Spices') { %>Seasoning<% }
+                                                           else if (item.category === 'Beverages') { %>Drinks<% }
+                                                           else if (item.category === 'Frozen') { %>Frozen Food<% }
+                                                           else if (item.category === 'Canned') { %>Preserved<% }
+                                                           else { %>Misc Item<% } %>
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td style="padding: 8px;">
+                                                <span class="badge
+                                                    <% if (item.location === 'Fridge') { %>bg-primary<% }
+                                                       else if (item.location === 'Freezer') { %>bg-info<% }
+                                                       else if (item.location === 'Pantry') { %>bg-warning<% }
+                                                       else if (item.location === 'Counter') { %>bg-success<% }
+                                                       else if (item.location === 'Cupboard') { %>bg-secondary<% }
+                                                       else { %>bg-secondary<% } %>" style="font-size: 0.7rem;">
+                                                    <%= item.location %>
+                                                </span>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <span class="fw-bold text-success" style="font-size: 0.8rem;">$<%= item.cost.toFixed(2) %></span>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <small class="text-muted" style="font-size: 0.7rem;">
+                                                    <%= new Date(item.purchaseDate).toLocaleDateString() %>
+                                                </small>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <small class="text-muted" style="font-size: 0.7rem;">
+                                                    <%= new Date(item.expirationDate).toLocaleDateString() %>
+                                                </small>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <small class="text-muted" style="font-size: 0.7rem;">
+                                                    <%= new Date(item.createdDate).toLocaleDateString() %>
+                                                </small>
+                                            </td>
+                                            <td class="text-center" style="padding: 8px;">
+                                                <div class="d-flex gap-1">
+                                                    <a href="/api/inventory/edit-<%= studentId %>/<%= item.inventoryId %>"
+                                                       class="btn btn-sm btn-outline-primary">Edit</a>
+                                                    <form action="/api/inventory/delete-<%= studentId %>/<%= item.inventoryId %>"
+                                                          method="POST" class="d-inline"
+                                                          onsubmit="return confirm('Are you sure you want to delete this inventory item: <%= item.ingredientName %>?')">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Summary Footer -->
+            <% if (inventory.length > 0) { %>
+                <div class="mt-4 text-center">
+                    <p class="text-muted">
+                        Showing <%= inventory.length %> item<%= inventory.length !== 1 ? 's' : '' %> in your inventory
+                        | Total Value: $<%= inventory.reduce((sum, item) => sum + item.cost, 0).toFixed(2) %>
+                    </p>
+                </div>
+            <% } %>
+
+            <!-- Alerts Section -->
+            <div class="mt-5">
+                <h2 class="text-gradient mb-3">Inventory Alerts</h2>
+
+                <!-- Alert Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-danger">
+                            <div class="card-body text-center">
+                                <h4 class="text-danger"><%= expiredItems.length %></h4>
+                                <p class="mb-0">Expired Items</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <h4 class="text-warning"><%= expiringItems.length %></h4>
+                                <p class="mb-0">Expiring Soon</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <h4 class="text-info"><%= lowStockItems.length %></h4>
+                                <p class="mb-0">Low Stock</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <h4 class="text-success">$<%= inventory.reduce((sum, item) => sum + item.cost, 0).toFixed(2) %></h4>
+                                <p class="mb-0">Inventory Value</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expired Items -->
+                <% if (expiredItems.length > 0) { %>
+                <div class="card mb-3">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0">Expired Items (<%= expiredItems.length %>)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% expiredItems.forEach(item => { %>
+                                    <tr>
+                                        <td>
+                                            <strong><%= item.ingredientName %></strong>
+                                            <br><small><%= item.category %></small>
+                                        </td>
+                                        <td><%= item.quantity %> <%= item.unit %></td>
+                                        <td><%= item.location %></td>
+                                        <td><%= new Date(item.expirationDate).toLocaleDateString() %></td>
+                                        <td>$<%= item.cost.toFixed(2) %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Expiring Soon Items -->
+                <% if (expiringItems.length > 0) { %>
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">Expiring Soon (<%= expiringItems.length %>)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% expiringItems.forEach(item => { %>
+                                    <tr>
+                                        <td>
+                                            <strong><%= item.ingredientName %></strong>
+                                            <br><small><%= item.category %></small>
+                                        </td>
+                                        <td><%= item.quantity %> <%= item.unit %></td>
+                                        <td><%= item.location %></td>
+                                        <td><%= new Date(item.expirationDate).toLocaleDateString() %></td>
+                                        <td>$<%= item.cost.toFixed(2) %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Low Stock Items -->
+                <% if (lowStockItems.length > 0) { %>
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">Low Stock (<%= lowStockItems.length %>)</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>Date</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% lowStockItems.forEach(item => { %>
+                                    <tr>
+                                        <td>
+                                            <strong><%= item.ingredientName %></strong>
+                                            <br><small><%= item.category %></small>
+                                        </td>
+                                        <td><%= item.quantity %> <%= item.unit %></td>
+                                        <td><%= item.location %></td>
+                                        <td><%= new Date(item.purchaseDate).toLocaleDateString() %></td>
+                                        <td>$<%= item.cost.toFixed(2) %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- No Alerts -->
+                <% if (expiredItems.length === 0 && expiringItems.length === 0 && lowStockItems.length === 0) { %>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-success">All Clear!</h5>
+                        <p class="text-muted mb-0">No alerts at this time.</p>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

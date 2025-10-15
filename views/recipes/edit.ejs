@@ -1,0 +1,166 @@
+<%- include('../partials/header', {title: title}) %>
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h4 class="mb-0">Edit Recipe</h4>
+                </div>
+                <div class="card-body">
+                    <% if (recipes.length === 0) { %>
+                        <div class="text-center py-4">
+                            <h5>No Recipes Available</h5>
+                            <p class="text-muted">There are no recipes to edit.</p>
+                            <a href="/api/recipes/add-form-<%= studentId %>" class="btn btn-primary">Add New Recipe</a>
+                        </div>
+                    <% } else { %>
+                        <div class="mb-3">
+                            <label for="recipeSelect" class="form-label">Select Recipe:</label>
+                            <select class="form-select" id="recipeSelect" onchange="showEditForm()">
+                                <option value="">Choose a recipe to edit...</option>
+                                <% recipes.forEach(recipe => { %>
+                                    <option value="<%= recipe.recipeId %>"
+                                            data-title="<%= recipe.title %>"
+                                            data-chef="<%= recipe.chef %>"
+                                            data-cuisine="<%= recipe.cuisineType %>"
+                                            data-difficulty="<%= recipe.difficulty %>"
+                                            data-meal="<%= recipe.mealType %>"
+                                            data-prep="<%= recipe.prepTime %>"
+                                            data-servings="<%= recipe.servings %>"
+                                            data-ingredients="<%= recipe.ingredients %>"
+                                            data-instructions="<%= recipe.instructions %>">
+                                        <%= recipe.title %> (by <%= recipe.chef %>)
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Edit Form -->
+                        <div id="editForm" style="display: none;">
+                            <form id="updateForm" method="POST">
+                                <!-- Basic Info Section -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="title" class="form-label">Recipe Title</label>
+                                        <input type="text" class="form-control" id="title" name="title" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="chef" class="form-label">Chef Name</label>
+                                        <input type="text" class="form-control" id="chef" name="chef" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cuisineType" class="form-label">Cuisine Type</label>
+                                        <select class="form-select" id="cuisineType" name="cuisineType" required>
+                                            <option value="">Select cuisine type</option>
+                                            <option value="Italian">Italian</option>
+                                            <option value="Asian">Asian</option>
+                                            <option value="Mexican">Mexican</option>
+                                            <option value="American">American</option>
+                                            <option value="French">French</option>
+                                            <option value="Indian">Indian</option>
+                                            <option value="Mediterranean">Mediterranean</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="mealType" class="form-label">Meal Type</label>
+                                        <select class="form-select" id="mealType" name="mealType" required>
+                                            <option value="">Select meal type</option>
+                                            <option value="Breakfast">Breakfast</option>
+                                            <option value="Lunch">Lunch</option>
+                                            <option value="Dinner">Dinner</option>
+                                            <option value="Snack">Snack</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="prepTime" class="form-label">Prep Time (minutes)</label>
+                                        <input type="number" class="form-control" id="prepTime" name="prepTime" min="1" max="480" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="difficulty" class="form-label">Difficulty</label>
+                                        <select class="form-select" id="difficulty" name="difficulty" required>
+                                            <option value="">Select difficulty</option>
+                                            <option value="Easy">Easy</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Hard">Hard</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="servings" class="form-label">Servings</label>
+                                        <input type="number" class="form-control" id="servings" name="servings" min="1" max="20" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="ingredients" class="form-label">Ingredients</label>
+                                    <textarea class="form-control" id="ingredients" name="ingredients" rows="4" required></textarea>
+                                    <small class="text-muted">List ingredients, one per line</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="instructions" class="form-label">Instructions</label>
+                                    <textarea class="form-control" id="instructions" name="instructions" rows="6" required></textarea>
+                                    <small class="text-muted">Step-by-step cooking instructions</small>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">Reset</button>
+                                    <button type="submit" class="btn btn-warning">Update Recipe</button>
+                                </div>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a href="/api/recipes-<%= studentId %>" class="btn btn-outline-secondary">Back to Recipes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showEditForm() {
+    const select = document.getElementById('recipeSelect');
+    const editForm = document.getElementById('editForm');
+    const updateForm = document.getElementById('updateForm');
+
+    if (select.value) {
+        const option = select.selectedOptions[0];
+
+        // Populate form fields
+        document.getElementById('title').value = option.dataset.title;
+        document.getElementById('chef').value = option.dataset.chef;
+        document.getElementById('cuisineType').value = option.dataset.cuisine;
+        document.getElementById('mealType').value = option.dataset.meal;
+        document.getElementById('prepTime').value = option.dataset.prep;
+        document.getElementById('difficulty').value = option.dataset.difficulty;
+        document.getElementById('servings').value = option.dataset.servings;
+        document.getElementById('ingredients').value = option.dataset.ingredients;
+        document.getElementById('instructions').value = option.dataset.instructions;
+
+        // Set form action
+        updateForm.action = `/api/recipes/update-<%= studentId %>/${option.value}`;
+
+        // Show form
+        editForm.style.display = 'block';
+    } else {
+        editForm.style.display = 'none';
+    }
+}
+
+function resetForm() {
+    document.getElementById('recipeSelect').value = '';
+    showEditForm();
+}
+</script>
+
+<%- include('../partials/footer') %>

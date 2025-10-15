@@ -1,0 +1,148 @@
+<%- include('../partials/header', {title: title}) %>
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Delete Inventory Item</h4>
+                </div>
+                <div class="card-body">
+                    <% if (inventory.length === 0) { %>
+                        <div class="text-center py-4">
+                            <h5>No Inventory Items Available</h5>
+                            <p class="text-muted">There are no inventory items to delete.</p>
+                            <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-primary">Add New Item</a>
+                        </div>
+                    <% } else { %>
+                        <div class="mb-3">
+                            <label for="inventorySelect" class="form-label">Select Inventory Item:</label>
+                            <select class="form-select" id="inventorySelect" onchange="showDetails()">
+                                <option value="">Choose an inventory item to delete...</option>
+                                <% inventory.forEach(item => { %>
+                                    <option value="<%= item.inventoryId || item.ingredientName %>" 
+                                            data-name="<%= item.ingredientName %>"
+                                            data-user="<%= item.userId %>"
+                                            data-category="<%= item.category %>"
+                                            data-quantity="<%= item.quantity %>"
+                                            data-unit="<%= item.unit %>"
+                                            data-location="<%= item.location %>"
+                                            data-cost="<%= item.cost %>"
+                                            data-purchase="<%= item.purchaseDate %>"
+                                            data-expiration="<%= item.expirationDate %>">
+                                        <%= item.ingredientName %> (by <%= item.userId %>)
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <!-- Inventory Item Details -->
+                        <div id="inventoryDetails" style="display: none;" class="mb-3">
+                            <div class="alert alert-info">
+                                <h6>Inventory Item Details:</h6>
+                                <p class="mb-1"><strong id="detailName"></strong> by <span id="detailUser"></span></p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1">ID: <span id="detailId" class="text-primary fw-bold"></span></p>
+                                        <p class="mb-1">Category: <span id="detailCategory"></span></p>
+                                        <p class="mb-1">Quantity: <span id="detailQuantity"></span> <span id="detailUnit"></span></p>
+                                        <p class="mb-0">Location: <span id="detailLocation"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1">Cost: $<span id="detailCost"></span></p>
+                                        <p class="mb-1">Purchase Date: <span id="detailPurchase"></span></p>
+                                        <p class="mb-0">Expiration Date: <span id="detailExpiration"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Dialog -->
+                        <div id="confirmDialog" style="display: none;">
+                            <div class="alert alert-warning">
+                                <strong>Warning:</strong> This will permanently delete "<span id="confirmName"></span>". This action cannot be undone.
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="confirmCheck" onchange="toggleButton()">
+                                <label class="form-check-label text-danger fw-bold" for="confirmCheck">
+                                    I understand and want to permanently delete this inventory item
+                                </label>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <a href="/api/inventory-<%= studentId %>" class="btn btn-secondary me-2">Back to Inventory</a>
+                    <% if (inventory.length > 0) { %>
+                        <button type="button" class="btn btn-outline-info me-2" onclick="resetForm()" style="display: none;" id="resetBtn">Reset</button>
+                        <form id="deleteForm" method="POST" style="display: inline;">
+                            <button type="submit" id="deleteBtn" class="btn btn-danger" disabled>
+                                Delete Item
+                            </button>
+                        </form>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDetails() {
+    const select = document.getElementById('inventorySelect');
+    const details = document.getElementById('inventoryDetails');
+    const dialog = document.getElementById('confirmDialog');
+    const resetBtn = document.getElementById('resetBtn');
+    const deleteForm = document.getElementById('deleteForm');
+    
+    if (select.value) {
+        const option = select.selectedOptions[0];
+        
+        // Show inventory item details
+        document.getElementById('detailName').textContent = option.dataset.name;
+        document.getElementById('detailUser').textContent = option.dataset.user;
+        document.getElementById('detailId').textContent = option.value;
+        document.getElementById('detailCategory').textContent = option.dataset.category;
+        document.getElementById('detailQuantity').textContent = option.dataset.quantity;
+        document.getElementById('detailUnit').textContent = option.dataset.unit;
+        document.getElementById('detailLocation').textContent = option.dataset.location;
+        document.getElementById('detailCost').textContent = parseFloat(option.dataset.cost).toFixed(2);
+        document.getElementById('detailPurchase').textContent = option.dataset.purchase;
+        document.getElementById('detailExpiration').textContent = option.dataset.expiration;
+        
+        // Show confirmation
+        document.getElementById('confirmName').textContent = option.dataset.name;
+        
+        // Set form action
+        deleteForm.action = `/api/inventory/delete/${option.value}`;
+        
+        // Show elements
+        details.style.display = 'block';
+        dialog.style.display = 'block';
+        resetBtn.style.display = 'inline-block';
+        
+        // Reset form
+        document.getElementById('confirmCheck').checked = false;
+        document.getElementById('deleteBtn').disabled = true;
+    } else {
+        details.style.display = 'none';
+        dialog.style.display = 'none';
+        resetBtn.style.display = 'none';
+    }
+}
+
+function toggleButton() {
+    const deleteBtn = document.getElementById('deleteBtn');
+    const confirmCheck = document.getElementById('confirmCheck');
+    deleteBtn.disabled = !confirmCheck.checked;
+}
+
+function resetForm() {
+    document.getElementById('inventorySelect').value = '';
+    showDetails();
+}
+</script>
+
+<%- include('../partials/footer') %>

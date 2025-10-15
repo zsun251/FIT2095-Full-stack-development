@@ -1,0 +1,38 @@
+<%- include('partials/header', {title: title}) %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="error-container text-center">
+                <div class="error-code">
+                    <%= statusCode %>
+                </div>
+                <h2 class="error-title"><%= title %></h2>
+                <p class="error-message"><%= message %></p>
+                
+                <% if (statusCode === 404) { %>
+                    <p class="text-muted">The page you're looking for doesn't exist or has been moved.</p>
+                <% } else if (statusCode === 400) { %>
+                    <p class="text-muted">Please check your input and try again.</p>
+                <% } else if (statusCode === 500) { %>
+                    <p class="text-muted">Something went wrong on our end. Please try again later.</p>
+                <% } %>
+                
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary">
+                        <span>Go to Homepage</span>
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary">
+                        <span>Go Back</span>
+                    </button>
+                </div>
+                
+                <div class="error-reference">
+                    <small class="text-muted">Error Reference: <%= studentId %>-<%= statusCode %></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

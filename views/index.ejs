@@ -1,0 +1,164 @@
+<%- include('partials/header', {title: 'Home'}) %>
+
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 mb-3">Recipe Hub</h1>
+        <h2 class="h3 mb-3">Your Personal Meal Planning Assistant</h2>
+        <% if (currentUser) { %>
+            <p class="lead mb-4">Welcome back, <%= currentUser.fullname %></p>
+            <p class="student-info">Email: <%= currentUser.email %></p>
+            <p class="student-info">User ID: <%= currentUser.userId %></p>
+            <p class="student-info">Role: <%= currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) %></p>
+        <% } %>
+    </div>
+</div>
+
+<% if (statusMessage) { %>
+<div class="container mt-4">
+    <div class="alert alert-<%= statusMessage.type === 'success' ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+        <%= statusMessage.text %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+<% } %>
+
+<div class="container my-5">
+    <% if (currentUser) { %>
+        <div class="row text-center mb-5">
+            <!-- Unified statistics for all roles -->
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalUsers || 0 %></div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalRecipes || 0 %></div>
+                    <div class="stat-label">Total Recipes</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalInventory || 0 %></div>
+                    <div class="stat-label">Inventory Items</div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <h2 class="text-center mb-4">Quick Actions</h2>
+    
+    <div class="row">
+        <% if (currentUser) { %>
+            <!-- Chef Role: Show Recipes + Inventory -->
+            <% if (currentUser.role === 'chef') { %>
+                <!-- Recipe Section for Chef -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-utensils text-success"></i> Recipe Management</h3>
+                        <p class="text-muted">Create and manage your recipe collection</p>
+                        <div class="d-grid gap-2">
+                            <a href="/api/recipes-<%= studentId %>" class="btn btn-primary">All Recipes</a>
+                            <a href="/api/recipes/my-recipes-<%= studentId %>" class="btn btn-outline-primary">My Recipes</a>
+                            <a href="/recommendations" class="btn btn-outline-info"><i class="fas fa-lightbulb"></i> Smart Suggestions</a>
+                            <a href="/api/recipes/add-form-<%= studentId %>" class="btn btn-outline-success">Add New Recipe</a>
+                            <a href="/api/recipes/edit-form-<%= studentId %>" class="btn btn-outline-warning">Edit Recipe</a>
+                            <a href="/api/recipes/delete-form-<%= studentId %>" class="btn btn-outline-danger">Delete Recipe</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Section for Chef -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-boxes text-warning"></i> Inventory Management</h3>
+                        <p class="text-muted">Track your ingredient inventory</p>
+                        <div class="d-grid gap-2">
+                            <a href="/api/inventory-<%= studentId %>" class="btn btn-primary">View Inventory</a>
+                            <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-outline-primary">Add Item</a>
+                            <a href="/api/inventory/edit-form-<%= studentId %>" class="btn btn-outline-warning">Edit Inventory</a>
+                            <a href="/api/inventory/delete-form-<%= studentId %>" class="btn btn-outline-danger">Delete Item</a>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Admin Role: Show Inventory + Reports -->
+            <% if (currentUser.role === 'admin') { %>
+                <!-- Inventory Section for Admin -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-boxes text-warning"></i> Inventory Management</h3>
+                        <p class="text-muted">Manage system inventory</p>
+                        <div class="d-grid gap-2">
+                            <a href="/api/inventory-<%= studentId %>" class="btn btn-primary">View Inventory</a>
+                            <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-outline-primary">Add Item</a>
+                            <a href="/api/inventory/edit-form-<%= studentId %>" class="btn btn-outline-warning">Edit Inventory</a>
+                            <a href="/api/inventory/delete-form-<%= studentId %>" class="btn btn-outline-danger">Delete Item</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section for Admin -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-chart-bar text-info"></i> System Reports</h3>
+                        <p class="text-muted">View system analytics and reports</p>
+                        <div class="d-grid gap-2">
+                            <a href="/reports" class="btn btn-primary">Reports Dashboard</a>
+                            <div class="mt-2">
+                                <small class="text-muted">Admin access only</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Manager Role: Show Inventory + Insights -->
+            <% if (currentUser.role === 'manager') { %>
+                <!-- Inventory Section for Manager -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-boxes text-warning"></i> Inventory Management</h3>
+                        <p class="text-muted">Manage inventory items and supplies</p>
+                        <div class="d-grid gap-2">
+                            <a href="/api/inventory-<%= studentId %>" class="btn btn-primary">View Inventory</a>
+                            <a href="/api/inventory/add-form-<%= studentId %>" class="btn btn-outline-primary">Add Item</a>
+                            <a href="/api/inventory/edit-form-<%= studentId %>" class="btn btn-outline-warning">Edit Inventory</a>
+                            <a href="/api/inventory/delete-form-<%= studentId %>" class="btn btn-outline-danger">Delete Item</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Insights Section for Manager -->
+                <div class="col-md-6 mb-4">
+                    <div class="action-card">
+                        <h3><i class="fas fa-brain text-success"></i> Inventory Intelligence</h3>
+                        <p class="text-muted">Smart analytics for cost optimization and waste reduction</p>
+                        <div class="d-grid gap-2">
+                            <a href="/inventory-insights" class="btn btn-success">Smart Analytics</a>
+                            <div class="mt-2">
+                                <small class="text-muted">Advanced purchasing insights and waste management</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        <% } else { %>
+            <!-- Guest user - show login prompt -->
+            <div class="col-md-8 mx-auto mb-4">
+                <div class="action-card text-center">
+                    <h3><i class="fas fa-sign-in-alt text-primary"></i> Welcome to Recipe Hub</h3>
+                    <p class="text-muted">Please log in to access your personalized dashboard</p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="/login" class="btn btn-primary">Login</a>
+                        <a href="/register" class="btn btn-outline-primary">Register</a>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

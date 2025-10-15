@@ -1,0 +1,178 @@
+<%- include('../partials/header', {title: title}) %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2 class="text-center mb-0">
+                        <% if (item) { %>Edit Inventory Item<% } else { %>Add New Inventory Item<% } %>
+                    </h2>
+                </div>
+
+                <!-- Error Display -->
+                <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <% } %>
+
+                <div class="form-body">
+                    <form id="inventoryForm" action="<% if (item) { %>/api/inventory/update-<%= studentId %>/<%= item.inventoryId %><% } else { %>/api/inventory/add-<%= studentId %><% } %>" method="POST">
+                        
+                        <!-- Basic Information Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Basic Information</h4>
+                            
+                            <!-- userId now automatically set from logged-in user -->
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="ingredientName" class="form-label required">Ingredient Name</label>
+                                    <input type="text" class="form-control" name="ingredientName" id="ingredientName"
+                                           value="<% if (item) { %><%= item.ingredientName %><% } else if (typeof formData !== 'undefined' && formData && formData.ingredientName) { %><%= formData.ingredientName %><% } %>"
+                                           placeholder="e.g., Fresh Tomatoes" required
+                                           minlength="2" maxlength="50"
+                                           pattern="[a-zA-Z\s\-]+">
+                                    <small class="text-muted">2-50 characters, letters, spaces, and hyphens only</small>
+                                    <div class="invalid-feedback" id="ingredientName-feedback"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="quantity" class="form-label required">Quantity</label>
+                                    <input type="number" class="form-control" name="quantity" id="quantity"
+                                           min="0.01" max="9999" step="0.01"
+                                           value="<% if (item) { %><%= item.quantity %><% } else if (typeof formData !== 'undefined' && formData && formData.quantity) { %><%= formData.quantity %><% } %>"
+                                           placeholder="e.g., 2.5" required>
+                                    <small class="text-muted">0.01 - 9999, supports decimals</small>
+                                    <div class="invalid-feedback" id="quantity-feedback"></div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="unit" class="form-label required">Unit</label>
+                                    <select class="form-select" name="unit" id="unit" required>
+                                        <option value="">Select unit</option>
+                                        <option value="pieces" <% if ((item && item.unit === 'pieces') || (typeof formData !== 'undefined' && formData && formData.unit === 'pieces')) { %>selected<% } %>>Pieces</option>
+                                        <option value="kg" <% if ((item && item.unit === 'kg') || (typeof formData !== 'undefined' && formData && formData.unit === 'kg')) { %>selected<% } %>>Kilograms (kg)</option>
+                                        <option value="g" <% if ((item && item.unit === 'g') || (typeof formData !== 'undefined' && formData && formData.unit === 'g')) { %>selected<% } %>>Grams (g)</option>
+                                        <option value="liters" <% if ((item && item.unit === 'liters') || (typeof formData !== 'undefined' && formData && formData.unit === 'liters')) { %>selected<% } %>>Liters</option>
+                                        <option value="ml" <% if ((item && item.unit === 'ml') || (typeof formData !== 'undefined' && formData && formData.unit === 'ml')) { %>selected<% } %>>Milliliters (ml)</option>
+                                        <option value="cups" <% if ((item && item.unit === 'cups') || (typeof formData !== 'undefined' && formData && formData.unit === 'cups')) { %>selected<% } %>>Cups</option>
+                                        <option value="tbsp" <% if ((item && item.unit === 'tbsp') || (typeof formData !== 'undefined' && formData && formData.unit === 'tbsp')) { %>selected<% } %>>Tablespoons (tbsp)</option>
+                                        <option value="tsp" <% if ((item && item.unit === 'tsp') || (typeof formData !== 'undefined' && formData && formData.unit === 'tsp')) { %>selected<% } %>>Teaspoons (tsp)</option>
+                                        <option value="dozen" <% if ((item && item.unit === 'dozen') || (typeof formData !== 'undefined' && formData && formData.unit === 'dozen')) { %>selected<% } %>>Dozen</option>
+                                    </select>
+                                    <small class="text-muted">Choose the appropriate measurement unit</small>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="category" class="form-label required">Category</label>
+                                    <select class="form-select" name="category" id="category" required>
+                                        <option value="">Select category</option>
+                                        <option value="Vegetables" <% if ((item && item.category === 'Vegetables') || (typeof formData !== 'undefined' && formData && formData.category === 'Vegetables')) { %>selected<% } %>>Vegetables</option>
+                                        <option value="Fruits" <% if ((item && item.category === 'Fruits') || (typeof formData !== 'undefined' && formData && formData.category === 'Fruits')) { %>selected<% } %>>Fruits</option>
+                                        <option value="Meat" <% if ((item && item.category === 'Meat') || (typeof formData !== 'undefined' && formData && formData.category === 'Meat')) { %>selected<% } %>>Meat</option>
+                                        <option value="Dairy" <% if ((item && item.category === 'Dairy') || (typeof formData !== 'undefined' && formData && formData.category === 'Dairy')) { %>selected<% } %>>Dairy</option>
+                                        <option value="Grains" <% if ((item && item.category === 'Grains') || (typeof formData !== 'undefined' && formData && formData.category === 'Grains')) { %>selected<% } %>>Grains</option>
+                                        <option value="Spices" <% if ((item && item.category === 'Spices') || (typeof formData !== 'undefined' && formData && formData.category === 'Spices')) { %>selected<% } %>>Spices</option>
+                                        <option value="Beverages" <% if ((item && item.category === 'Beverages') || (typeof formData !== 'undefined' && formData && formData.category === 'Beverages')) { %>selected<% } %>>Beverages</option>
+                                        <option value="Frozen" <% if ((item && item.category === 'Frozen') || (typeof formData !== 'undefined' && formData && formData.category === 'Frozen')) { %>selected<% } %>>Frozen</option>
+                                        <option value="Canned" <% if ((item && item.category === 'Canned') || (typeof formData !== 'undefined' && formData && formData.category === 'Canned')) { %>selected<% } %>>Canned</option>
+                                        <option value="Other" <% if ((item && item.category === 'Other') || (typeof formData !== 'undefined' && formData && formData.category === 'Other')) { %>selected<% } %>>Other</option>
+                                    </select>
+                                    <small class="text-muted">Choose the food category type</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Storage Information Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Storage Information</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="location" class="form-label required">Storage Location</label>
+                                    <select class="form-select" name="location" id="location" required>
+                                        <option value="">Select storage location</option>
+                                        <option value="Fridge" <% if ((item && item.location === 'Fridge') || (typeof formData !== 'undefined' && formData && formData.location === 'Fridge')) { %>selected<% } %>>Fridge</option>
+                                        <option value="Freezer" <% if ((item && item.location === 'Freezer') || (typeof formData !== 'undefined' && formData && formData.location === 'Freezer')) { %>selected<% } %>>Freezer</option>
+                                        <option value="Pantry" <% if ((item && item.location === 'Pantry') || (typeof formData !== 'undefined' && formData && formData.location === 'Pantry')) { %>selected<% } %>>Pantry</option>
+                                        <option value="Counter" <% if ((item && item.location === 'Counter') || (typeof formData !== 'undefined' && formData && formData.location === 'Counter')) { %>selected<% } %>>Counter</option>
+                                        <option value="Cupboard" <% if ((item && item.location === 'Cupboard') || (typeof formData !== 'undefined' && formData && formData.location === 'Cupboard')) { %>selected<% } %>>Cupboard</option>
+                                    </select>
+                                    <small class="text-muted">Where is this item stored?</small>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="cost" class="form-label required">Cost ($)</label>
+                                    <input type="number" class="form-control" name="cost" id="cost"
+                                           min="0.01" max="999.99" step="0.01"
+                                           value="<% if (item) { %><%= item.cost %><% } else if (typeof formData !== 'undefined' && formData && formData.cost) { %><%= formData.cost %><% } %>"
+                                           placeholder="e.g., 12.50" required>
+                                    <small class="text-muted">$0.01 - $999.99, maximum 2 decimal places</small>
+                                    <div class="invalid-feedback" id="cost-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date Information Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">Date Information</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="purchaseDate" class="form-label required">Purchase Date</label>
+                                    <input type="date" class="form-control" name="purchaseDate"
+                                           value="<% if (item) { %><%= item.purchaseDate.toISOString().split('T')[0] %><% } else if (typeof formData !== 'undefined' && formData && formData.purchaseDate) { %><%= formData.purchaseDate %><% } %>" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="expirationDate" class="form-label required">Expiration Date</label>
+                                    <input type="date" class="form-control" name="expirationDate"
+                                           value="<% if (item) { %><%= item.expirationDate.toISOString().split('T')[0] %><% } else if (typeof formData !== 'undefined' && formData && formData.expirationDate) { %><%= formData.expirationDate %><% } %>" required>
+                                    <small class="text-muted">Must be after purchase date</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <% if (item) { %>Update Item<% } else { %>Add Item<% } %>
+                            </button>
+                            <a href="/api/inventory-<%= studentId %>" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Date validation script -->
+<script>
+    // Date validation - ensure expiration date is after purchase date
+    document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+        const purchaseDate = document.getElementById('purchaseDate').value;
+        const expirationDate = document.getElementById('expirationDate').value;
+        
+        if (purchaseDate && expirationDate) {
+            const purchaseDateObj = new Date(purchaseDate);
+            const expirationDateObj = new Date(expirationDate);
+            
+            if (expirationDateObj <= purchaseDateObj) {
+                e.preventDefault();
+                alert('Error: Expiration date must be after purchase date');
+                document.getElementById('expirationDate').focus();
+                return false;
+            }
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>
