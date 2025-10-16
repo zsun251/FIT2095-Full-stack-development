@@ -86,19 +86,19 @@
                 <small class="form-text text-muted">Password must contain:</small>
                 <ul class="password-checklist small">
                   <li [class.text-success]="passwordChecks.length" [class.text-danger]="!passwordChecks.length">
-                    {{ passwordChecks.length ? '✓' : '✗' }} At least 8 characters
+                    At least 8 characters
                   </li>
                   <li [class.text-success]="passwordChecks.uppercase" [class.text-danger]="!passwordChecks.uppercase">
-                    {{ passwordChecks.uppercase ? '✓' : '✗' }} One uppercase letter
+                    One uppercase letter
                   </li>
                   <li [class.text-success]="passwordChecks.lowercase" [class.text-danger]="!passwordChecks.lowercase">
-                    {{ passwordChecks.lowercase ? '✓' : '✗' }} One lowercase letter
+                    One lowercase letter
                   </li>
                   <li [class.text-success]="passwordChecks.number" [class.text-danger]="!passwordChecks.number">
-                    {{ passwordChecks.number ? '✓' : '✗' }} One number
+                    One number
                   </li>
                   <li [class.text-success]="passwordChecks.special" [class.text-danger]="!passwordChecks.special">
-                    {{ passwordChecks.special ? '✓' : '✗' }} One special character (!@#$%^&*(),.?":{{ '{' }}{{ '}' }}|&lt;&gt;)
+                    One special character (!@#$%^&*(),.?":{{ '{' }}{{ '}' }}|&lt;&gt;)
                   </li>
                 </ul>
               </div>

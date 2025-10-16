@@ -62,9 +62,9 @@ export class LoginComponent {
         if (response.success) {
           this.successMessage = response.message || 'Login successful!';
 
-          // Redirect to home page after short delay
+          // Redirect to dashboard after short delay
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
           }, 1000);
         } else {
           this.errorMessage = response.error || 'Invalid email or password';

@@ -186,11 +186,11 @@ export class RegisterComponent implements OnInit {
         this.isLoading = false;
 
         if (response.success) {
-          this.successMessage = response.message || 'Registration successful! Redirecting to home...';
+          this.successMessage = response.message || 'Registration successful! Redirecting to dashboard...';
 
-          // Redirect to home page after short delay
+          // Redirect to dashboard after short delay
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
           }, 2000);
         } else {
           this.errorMessage = response.error || 'Registration failed. Please try again.';
