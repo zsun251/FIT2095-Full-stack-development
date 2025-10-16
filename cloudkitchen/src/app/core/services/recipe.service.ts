@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
-import { Recipe, RecipeRequest } from '../../shared/models/recipe.model';
+import { Observable, catchError, throwError, map } from 'rxjs';
+import { Recipe, RecipeRequest, RecipeResponse } from '../../shared/models/recipe.model';
 
 /**
  * Recipe Service - Handles all recipe-related API calls
@@ -22,7 +22,29 @@ export class RecipeService {
    * @returns Observable<Recipe[]>
    */
   getAllRecipes(): Observable<Recipe[]> {
-    return this.http.get<Recipe[]>(this.API_URL).pipe(
+    return this.http.get<RecipeResponse>(`${this.API_URL}`).pipe(
+      map(response => {
+        if (response.success && Array.isArray(response.data)) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to fetch recipes');
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Get current user's recipes
+   * @returns Observable<Recipe[]>
+   */
+  getMyRecipes(): Observable<Recipe[]> {
+    return this.http.get<RecipeResponse>(`${this.API_URL}/my`).pipe(
+      map(response => {
+        if (response.success && Array.isArray(response.data)) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to fetch my recipes');
+      }),
       catchError(this.handleError)
     );
   }
@@ -33,18 +55,13 @@ export class RecipeService {
    * @returns Observable<Recipe>
    */
   getRecipeById(recipeId: string): Observable<Recipe> {
-    return this.http.get<Recipe>(`${this.API_URL}/${recipeId}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Get recipes by user ID
-   * @param userId User ID (format: U-XXXXX)
-   * @returns Observable<Recipe[]>
-   */
-  getRecipesByUserId(userId: string): Observable<Recipe[]> {
-    return this.http.get<Recipe[]>(`${this.API_URL}/user/${userId}`).pipe(
+    return this.http.get<RecipeResponse>(`${this.API_URL}/${recipeId}`).pipe(
+      map(response => {
+        if (response.success && response.data && !Array.isArray(response.data)) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Recipe not found');
+      }),
       catchError(this.handleError)
     );
   }
@@ -55,7 +72,13 @@ export class RecipeService {
    * @returns Observable<Recipe>
    */
   createRecipe(recipeData: RecipeRequest): Observable<Recipe> {
-    return this.http.post<Recipe>(this.API_URL, recipeData).pipe(
+    return this.http.post<RecipeResponse>(`${this.API_URL}`, recipeData).pipe(
+      map(response => {
+        if (response.success && response.data && !Array.isArray(response.data)) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to create recipe');
+      }),
       catchError(this.handleError)
     );
   }
@@ -67,7 +90,13 @@ export class RecipeService {
    * @returns Observable<Recipe>
    */
   updateRecipe(recipeId: string, recipeData: Partial<RecipeRequest>): Observable<Recipe> {
-    return this.http.put<Recipe>(`${this.API_URL}/${recipeId}`, recipeData).pipe(
+    return this.http.put<RecipeResponse>(`${this.API_URL}/${recipeId}`, recipeData).pipe(
+      map(response => {
+        if (response.success && response.data && !Array.isArray(response.data)) {
+          return response.data;
+        }
+        throw new Error(response.error || 'Failed to update recipe');
+      }),
       catchError(this.handleError)
     );
   }
@@ -75,21 +104,16 @@ export class RecipeService {
   /**
    * Delete a recipe
    * @param recipeId Recipe ID
-   * @returns Observable<any>
+   * @returns Observable<RecipeResponse>
    */
-  deleteRecipe(recipeId: string): Observable<any> {
-    return this.http.delete(`${this.API_URL}/${recipeId}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Search recipes by filters
-   * @param filters Search filters (mealType, cuisineType, difficulty, etc.)
-   * @returns Observable<Recipe[]>
-   */
-  searchRecipes(filters: any): Observable<Recipe[]> {
-    return this.http.get<Recipe[]>(`${this.API_URL}/search`, { params: filters }).pipe(
+  deleteRecipe(recipeId: string): Observable<RecipeResponse> {
+    return this.http.delete<RecipeResponse>(`${this.API_URL}/${recipeId}`).pipe(
+      map(response => {
+        if (!response.success) {
+          throw new Error(response.error || 'Failed to delete recipe');
+        }
+        return response;
+      }),
       catchError(this.handleError)
     );
   }

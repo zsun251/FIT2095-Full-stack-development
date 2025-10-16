@@ -1,0 +1,204 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="form-card">
+        <div class="form-header">
+          <h2 class="text-center mb-0">
+            {{ isEditMode ? 'Edit Recipe' : 'Add New Recipe' }}
+          </h2>
+        </div>
+
+        <!-- Success Message -->
+        @if (successMessage) {
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = null" aria-label="Close"></button>
+          </div>
+        }
+
+        <!-- Error Display -->
+        @if (error) {
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" (click)="error = null" aria-label="Close"></button>
+          </div>
+        }
+
+        <div class="form-body">
+          <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+              <h4 class="section-title">Basic Information</h4>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="title" class="form-label required">Recipe Title</label>
+                  <input type="text" class="form-control" id="title" formControlName="title"
+                         [class.is-invalid]="isFieldInvalid('title')"
+                         placeholder="e.g., Spaghetti Carbonara">
+                  <small class="text-muted">3-100 characters, must be unique</small>
+                  @if (isFieldInvalid('title')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('title') }}
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="chef" class="form-label required">Chef Name</label>
+                  <input type="text" class="form-control" id="chef" formControlName="chef"
+                         [class.is-invalid]="isFieldInvalid('chef')"
+                         placeholder="e.g., Mario Rossi">
+                  <small class="text-muted">{{ isEditMode ? '2-50 characters, letters, spaces, hyphens and apostrophes only' : 'Auto-filled with your name' }}</small>
+                  @if (isFieldInvalid('chef')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('chef') }}
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="cuisineType" class="form-label required">Cuisine Type</label>
+                  <select class="form-select" id="cuisineType" formControlName="cuisineType"
+                          [class.is-invalid]="isFieldInvalid('cuisineType')">
+                    <option value="">Select cuisine type</option>
+                    @for (cuisine of cuisineTypes; track cuisine) {
+                      <option [value]="cuisine">{{ cuisine }}</option>
+                    }
+                  </select>
+                  <small class="text-muted">Choose from predefined cuisine types</small>
+                  @if (isFieldInvalid('cuisineType')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('cuisineType') }}
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="mealType" class="form-label required">Meal Type</label>
+                  <select class="form-select" id="mealType" formControlName="mealType"
+                          [class.is-invalid]="isFieldInvalid('mealType')">
+                    <option value="">Select meal type</option>
+                    @for (meal of mealTypes; track meal) {
+                      <option [value]="meal">{{ meal }}</option>
+                    }
+                  </select>
+                  @if (isFieldInvalid('mealType')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('mealType') }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Recipe Details Section -->
+            <div class="form-section">
+              <h4 class="section-title">Recipe Details</h4>
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="prepTime" class="form-label required">Prep Time (minutes)</label>
+                  <input type="number" class="form-control" id="prepTime" formControlName="prepTime"
+                         [class.is-invalid]="isFieldInvalid('prepTime')"
+                         placeholder="e.g., 30" min="1" max="480">
+                  <small class="text-muted">1-480 minutes</small>
+                  @if (isFieldInvalid('prepTime')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('prepTime') }}
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="difficulty" class="form-label required">Difficulty Level</label>
+                  <select class="form-select" id="difficulty" formControlName="difficulty"
+                          [class.is-invalid]="isFieldInvalid('difficulty')">
+                    <option value="">Select difficulty</option>
+                    @for (level of difficultyLevels; track level) {
+                      <option [value]="level">{{ level }}</option>
+                    }
+                  </select>
+                  @if (isFieldInvalid('difficulty')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('difficulty') }}
+                    </div>
+                  }
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="servings" class="form-label required">Servings</label>
+                  <input type="number" class="form-control" id="servings" formControlName="servings"
+                         [class.is-invalid]="isFieldInvalid('servings')"
+                         placeholder="e.g., 4" min="1" max="20">
+                  <small class="text-muted">1-20 servings</small>
+                  @if (isFieldInvalid('servings')) {
+                    <div class="invalid-feedback d-block">
+                      {{ getFieldError('servings') }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Ingredients Section -->
+            <div class="form-section">
+              <h4 class="section-title">Ingredients</h4>
+
+              <div class="mb-3">
+                <label for="ingredients" class="form-label required">Ingredients List</label>
+                <textarea class="form-control" id="ingredients" formControlName="ingredients"
+                          [class.is-invalid]="isFieldInvalid('ingredients')"
+                          rows="4"
+                          placeholder="Enter ingredients separated by commas&#10;e.g., 400g spaghetti, 200g pancetta, 4 large eggs, 100g Pecorino Romano, Black pepper"></textarea>
+                <small class="text-muted">1-20 ingredients, each at least 3 characters. Separate with commas.</small>
+                <div class="form-text">{{ getIngredientsCount() }} ingredients</div>
+                @if (isFieldInvalid('ingredients')) {
+                  <div class="invalid-feedback d-block">
+                    {{ getFieldError('ingredients') }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="form-section">
+              <h4 class="section-title">Instructions</h4>
+
+              <div class="mb-3">
+                <label for="instructions" class="form-label required">Cooking Instructions</label>
+                <textarea class="form-control" id="instructions" formControlName="instructions"
+                          [class.is-invalid]="isFieldInvalid('instructions')"
+                          rows="5"
+                          placeholder="Enter cooking steps separated by commas&#10;e.g., Boil salted water for pasta, Cook pancetta until crispy, Whisk eggs with cheese, Combine hot pasta with pancetta, Add egg mixture off heat"></textarea>
+                <small class="text-muted">1-15 steps, each at least 10 characters. Separate with commas.</small>
+                <div class="form-text">{{ getInstructionsCount() }} steps</div>
+                @if (isFieldInvalid('instructions')) {
+                  <div class="invalid-feedback d-block">
+                    {{ getFieldError('instructions') }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-lg" [disabled]="loading">
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                }
+                {{ isEditMode ? 'Update Recipe' : 'Add Recipe' }}
+              </button>
+              <a routerLink="/recipes" class="btn btn-outline-secondary btn-lg">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

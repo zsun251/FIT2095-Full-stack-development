@@ -27,5 +27,12 @@ export interface RecipeRequest {
   prepTime: number;
   difficulty: string;
   servings: number;
-  createdDate: string;
+  userId: string;
+}
+
+export interface RecipeResponse {
+  success: boolean;
+  data?: Recipe | Recipe[];
+  message?: string;
+  error?: string;
 }
