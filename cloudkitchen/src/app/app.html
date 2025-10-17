@@ -1,11 +1,11 @@
 <!-- CloudKitchen Pro - Angular Application -->
-<!-- Header Navigation -->
-<app-header></app-header>
+<!-- Header Navigation (hidden on login/register) -->
+<app-header *ngIf="showHeaderFooter"></app-header>
 
 <!-- Main Content Area -->
 <main class="main-content">
   <router-outlet />
 </main>
 
-<!-- Footer -->
-<app-footer></app-footer>
+<!-- Footer (hidden on login/register) -->
+<app-footer *ngIf="showHeaderFooter"></app-footer>

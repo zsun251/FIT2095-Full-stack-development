@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.html',
   styles: [`
     :host {
@@ -17,4 +19,15 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 })
 export class App {
   title = 'CloudKitchen Pro - Recipe & Inventory Management';
+  showHeaderFooter = true;
+
+  constructor(private router: Router) {
+    // Hide header/footer on login and register pages
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      const url = event.url;
+      this.showHeaderFooter = !(url.includes('/login') || url.includes('/register'));
+    });
+  }
 }

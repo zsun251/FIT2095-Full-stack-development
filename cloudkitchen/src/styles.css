@@ -1,7 +1,7 @@
 /* ============================================
-   CloudKitchen Pro - Global Styles
+   CloudKitchen - Unified Styles
    Student: Zhan Sun ()
-   FIT2095 Assignment 3 - Angular Application
+   FIT2095 Assignment 3
    ============================================ */
 
 /* Root Variables */
@@ -16,11 +16,14 @@
     --dark-color: #212529;
 }
 
-/* General Styles */
+/* ============================================
+   General Styles
+   ============================================ */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -30,7 +33,6 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Angular Root Component */
 app-root {
     display: flex;
     flex-direction: column;
@@ -40,15 +42,17 @@ app-root {
 
 .container {
     flex: 1;
+    width: 100%;
 }
 
-/* Main Content */
 .main-content {
     flex: 1 0 auto;
     padding-bottom: 2rem;
 }
 
-/* Navigation */
+/* ============================================
+   Navigation
+   ============================================ */
 .navbar-brand {
     font-weight: bold;
     font-size: 1.5rem;
@@ -66,7 +70,9 @@ app-root {
     font-size: 0.9rem;
 }
 
-/* Hero Section */
+/* ============================================
+   Hero Section
+   ============================================ */
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -89,20 +95,21 @@ app-root {
     font-weight: 500;
 }
 
-/* Statistics Cards */
+/* ============================================
+   Cards
+   ============================================ */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
 .stat-card {
     background: white;
     border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
     border: 2px solid transparent;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border-color: var(--primary-color);
 }
 
 .stat-number {
@@ -120,13 +127,11 @@ app-root {
     font-weight: 500;
 }
 
-/* Action Cards */
 .action-card {
     background: white;
     border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -140,11 +145,6 @@ app-root {
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.action-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .card-icon {
@@ -163,12 +163,28 @@ app-root {
     margin-bottom: 1.5rem;
 }
 
-/* Buttons */
+.card.border-danger,
+.card.border-warning,
+.card.border-info,
+.card.border-success {
+    border-width: 2px;
+}
+
+.card.border-danger h4,
+.card.border-warning h4,
+.card.border-info h4,
+.card.border-success h4 {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
 .btn {
     border-radius: 8px;
     padding: 0.6rem 1.5rem;
     font-weight: 500;
-    transition: all 0.3s ease;
 }
 
 .btn-primary {
@@ -178,38 +194,41 @@ app-root {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-outline-primary:hover,
-.btn-outline-success:hover,
-.btn-outline-info:hover,
-.btn-outline-warning:hover,
-.btn-outline-danger:hover {
-    transform: translateY(-2px);
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 0.7rem;
 }
 
-/* Cards */
-.card {
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: none;
-    transition: all 0.3s ease;
+.btn-group {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Forms */
+/* ============================================
+   Forms
+   ============================================ */
 .form-control:focus,
 .form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-/* Footer */
+/* ============================================
+   Tables
+   ============================================ */
+.table-responsive {
+    max-height: none;
+    overflow-x: auto;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
 .footer {
     flex-shrink: 0;
     margin-top: auto;
@@ -220,7 +239,118 @@ app-root {
     margin-bottom: 0.5rem;
 }
 
-/* Responsive Design */
+/* ============================================
+   Error Page
+   ============================================ */
+.error-template {
+    padding: 60px 15px;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-code {
+    font-size: 10rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0;
+    line-height: 1;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.error-description {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.error-details {
+    margin-top: 2rem;
+}
+
+.error-details p {
+    font-size: 1.1rem;
+    color: #495057;
+    margin-bottom: 1.5rem;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.error-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+}
+
+.student-info-box {
+    background-color: #f8f9fa;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-soft {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.rounded-lg {
+    border-radius: 15px;
+}
+
+.my-5 {
+    margin-top: 3rem !important;
+    margin-bottom: 3rem !important;
+}
+
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+.spinner-border {
+    border-width: 0.2em;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+/* All animations removed */
+
+/* ============================================
+   Responsive Design
+   ============================================ */
 @media (max-width: 768px) {
     .hero-section {
         padding: 3rem 0;
@@ -237,62 +367,40 @@ app-root {
     .navbar-text {
         display: none;
     }
-}
 
-/* Utility Classes */
-.text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.shadow-soft {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-}
-
-.rounded-lg {
-    border-radius: 15px;
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    .error-code {
+        font-size: 6rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .error-title {
+        font-size: 1.8rem;
+    }
+
+    .error-description {
+        font-size: 1rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .error-actions .btn {
+        width: 100%;
+        max-width: 300px;
     }
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease-out;
-}
+@media (max-width: 576px) {
+    .error-template {
+        padding: 40px 15px;
+    }
 
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
+    .error-code {
+        font-size: 4rem;
+    }
 
-/* Auth Pages Layout Fix */
-.container {
-    width: 100%;
-}
-
-/* Ensure proper spacing for auth forms */
-.my-5 {
-    margin-top: 3rem !important;
-    margin-bottom: 3rem !important;
-}
-
-.py-4 {
-    padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important;
-}
-
-/* Loading Spinner */
-.spinner-border {
-    border-width: 0.2em;
+    .error-title {
+        font-size: 1.5rem;
+    }
 }

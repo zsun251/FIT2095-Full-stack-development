@@ -30,6 +30,12 @@ export class RegisterComponent implements OnInit {
   };
 
   ngOnInit() {
+    // Redirect to dashboard if already logged in
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
     // Initialize registration form with validators
     this.registerForm = this.fb.group({
       fullname: ['', [

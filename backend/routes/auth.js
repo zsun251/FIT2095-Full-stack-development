@@ -2,22 +2,19 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/AuthController');
 
-// GET Registration page
-router.get('/register', AuthController.getRegister);
+/**
+ * Authentication Routes - JSON API only (for Angular frontend)
+ * Student: Zhan Sun ()
+ * Assignment 3 - No EJS, pure REST API
+ */
 
-// POST Registration - Create new user
-router.post('/register', AuthController.postRegister);
+// POST /api/auth/register - Register new user
+router.post('/api/auth/register', AuthController.postRegisterAPI);
 
-// GET Login page
-router.get('/login', AuthController.getLogin);
+// POST /api/auth/login - Login user
+router.post('/api/auth/login', AuthController.postLoginAPI);
 
-// POST Login - Authenticate user
-router.post('/login', AuthController.postLogin);
-
-// POST Logout
-router.post('/logout', AuthController.postLogout);
-
-// GET Logout (for convenience)
-router.get('/logout', AuthController.getLogout);
+// POST /api/auth/logout - Logout user
+router.post('/api/auth/logout', AuthController.postLogoutAPI);
 
 module.exports = router;

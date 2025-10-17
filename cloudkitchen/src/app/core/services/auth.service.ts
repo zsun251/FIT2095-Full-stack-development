@@ -48,7 +48,7 @@ export class AuthService {
    * @returns Observable<AuthResponse>
    */
   register(registerData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, registerData).pipe(
+    return this.http.post<AuthResponse>(`${this.API_URL}/api/auth/register`, registerData).pipe(
       tap(response => {
         if (response.success && response.user) {
           this.setCurrentUser(response.user);
@@ -71,7 +71,7 @@ export class AuthService {
    * @returns Observable<AuthResponse>
    */
   login(loginData: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, loginData).pipe(
+    return this.http.post<AuthResponse>(`${this.API_URL}/api/auth/login`, loginData).pipe(
       tap(response => {
         if (response.success && response.user) {
           this.setCurrentUser(response.user);
@@ -93,7 +93,7 @@ export class AuthService {
    * @returns Observable<AuthResponse>
    */
   logout(): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/logout`, {}).pipe(
+    return this.http.post<AuthResponse>(`${this.API_URL}/api/auth/logout`, {}).pipe(
       tap(() => {
         this.clearCurrentUser();
       }),

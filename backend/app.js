@@ -6,8 +6,6 @@
 // ============================================
 
 const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
 const cors = require('cors');
 
 // MongoDB connection
@@ -16,8 +14,7 @@ const connectDB = require('./config/database');
 // Middleware
 const { setCurrentUser } = require('./middleware/auth');
 
-// Routes
-const homeRoutes = require('./routes/home');
+// Routes (JSON API only)
 const recipeRoutes = require('./routes/recipes');
 const inventoryRoutes = require('./routes/inventory');
 const authRoutes = require('./routes/auth');
@@ -31,14 +28,8 @@ const port = process.env.PORT || 3000;
 connectDB();
 
 // ============================================
-// VIEW ENGINE CONFIGURATION
-// ============================================
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// ============================================
 // MIDDLEWARE CONFIGURATION
+// No EJS - Pure REST API for Angular frontend
 // ============================================
 
 // CORS Configuration - Allow Angular frontend access
@@ -51,20 +42,14 @@ app.use(cors({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve Bootstrap from node_modules
-app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
 
 // User session middleware - sets current user globally
 app.use(setCurrentUser);
 
 // ============================================
 // ROUTES CONFIGURATION
+// JSON API only - No server-side rendering
 // ============================================
-
-// Home routes (includes homepage and main API endpoints)
-app.use('/', homeRoutes);
 
 // Recipe management routes
 app.use('/api/recipes', recipeRoutes);
@@ -86,28 +71,32 @@ app.use('/recommendations', recommendationsRoutes);
 // Auth routes (login, register, logout)
 app.use('/', authRoutes);
 
+// Dashboard API routes
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
+
 // ============================================
 // ERROR HANDLING
+// JSON API error responses only
 // ============================================
 
-// 404 handler
+// 404 handler - API endpoint not found
 app.use((_req, res) => {
-    res.status(404).render('error', {
-        title: 'Page Not Found',
-        statusCode: 404,
-        message: 'The page you are looking for does not exist.',
-        studentId: ''
+    res.status(404).json({
+        success: false,
+        error: 'API endpoint not found',
+        statusCode: 404
     });
 });
 
-// Global error handler
+// Global error handler - Server errors
 app.use((error, _req, res, _next) => {
     console.error('Global Error:', error);
-    res.status(500).render('error', {
-        title: 'Server Error',
-        statusCode: 500,
-        message: 'Something went wrong on the server.',
-        studentId: ''
+    res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: error.message,
+        statusCode: 500
     });
 });
 
