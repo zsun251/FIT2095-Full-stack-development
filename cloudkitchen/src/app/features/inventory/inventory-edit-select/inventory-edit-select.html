@@ -1,0 +1,165 @@
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">Edit Inventory Item</h4>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+
+          <!-- No Items -->
+          <div *ngIf="!loading && inventoryItems.length === 0" class="text-center py-4">
+            <h5>No Inventory Items Available</h5>
+            <p class="text-muted">There are no inventory items to edit.</p>
+            <a routerLink="/inventory/add" class="btn btn-primary">Add New Item</a>
+          </div>
+
+          <!-- Item Selection -->
+          <div *ngIf="!loading && inventoryItems.length > 0">
+            <div class="mb-3">
+              <label for="inventorySelect" class="form-label">Select Inventory Item:</label>
+              <select
+                class="form-select"
+                id="inventorySelect"
+                [(ngModel)]="selectedItemId"
+                (change)="onItemSelect()">
+                <option value="">Choose an inventory item to edit...</option>
+                <option
+                  *ngFor="let item of inventoryItems"
+                  [value]="item.inventoryId">
+                  {{ item.ingredientName }} (by {{ item.userId }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Edit Form -->
+            <div *ngIf="showEditForm" id="editForm">
+              <form (ngSubmit)="onSubmit()" #editForm="ngForm">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="ingredientName" class="form-label">Ingredient Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="ingredientName"
+                      name="ingredientName"
+                      [(ngModel)]="formData.ingredientName"
+                      required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select
+                      class="form-select"
+                      id="category"
+                      name="category"
+                      [(ngModel)]="formData.category"
+                      required>
+                      <option value="">Select Category</option>
+                      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="quantity"
+                      name="quantity"
+                      [(ngModel)]="formData.quantity"
+                      step="0.01"
+                      min="0.01"
+                      max="9999"
+                      required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="unit" class="form-label">Unit</label>
+                    <select
+                      class="form-select"
+                      id="unit"
+                      name="unit"
+                      [(ngModel)]="formData.unit"
+                      required>
+                      <option value="">Select Unit</option>
+                      <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <select
+                      class="form-select"
+                      id="location"
+                      name="location"
+                      [(ngModel)]="formData.location"
+                      required>
+                      <option value="">Select Location</option>
+                      <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="cost" class="form-label">Cost ($)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="cost"
+                      name="cost"
+                      [(ngModel)]="formData.cost"
+                      step="0.01"
+                      min="0.01"
+                      max="999.99"
+                      required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="purchaseDate" class="form-label">Purchase Date</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="purchaseDate"
+                      name="purchaseDate"
+                      [(ngModel)]="formData.purchaseDate"
+                      required>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="expirationDate" class="form-label">Expiration Date</label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="expirationDate"
+                      name="expirationDate"
+                      [(ngModel)]="formData.expirationDate"
+                      required>
+                  </div>
+                </div>
+
+                <div class="text-center">
+                  <button type="button" class="btn btn-secondary me-2" (click)="resetForm()">Reset</button>
+                  <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Update Item</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-center">
+          <button class="btn btn-outline-secondary" (click)="goBack()">Back to Inventory</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

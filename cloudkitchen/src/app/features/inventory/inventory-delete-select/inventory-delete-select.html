@@ -1,0 +1,108 @@
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-danger text-white text-center">
+          <h4 class="mb-0">Delete Inventory Item</h4>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+
+          <!-- No Items -->
+          <div *ngIf="!loading && inventoryItems.length === 0" class="text-center py-4">
+            <h5>No Inventory Items Available</h5>
+            <p class="text-muted">There are no inventory items to delete.</p>
+            <a routerLink="/inventory/add" class="btn btn-primary">Add New Item</a>
+          </div>
+
+          <!-- Item Selection -->
+          <div *ngIf="!loading && inventoryItems.length > 0">
+            <div class="mb-3">
+              <label for="inventorySelect" class="form-label">Select Inventory Item:</label>
+              <select
+                class="form-select"
+                id="inventorySelect"
+                [(ngModel)]="selectedItemId"
+                (change)="onItemSelect()">
+                <option value="">Choose an inventory item to delete...</option>
+                <option
+                  *ngFor="let item of inventoryItems"
+                  [value]="item.inventoryId">
+                  {{ item.ingredientName }} (by {{ item.userId }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Inventory Item Details -->
+            <div *ngIf="showDetails && selectedItem" id="inventoryDetails" class="mb-3">
+              <div class="alert alert-info">
+                <h6>Inventory Item Details:</h6>
+                <p class="mb-1"><strong>{{ selectedItem.ingredientName }}</strong> by {{ selectedItem.userId }}</p>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-1">ID: <span class="text-primary fw-bold">{{ selectedItem.inventoryId }}</span></p>
+                    <p class="mb-1">Category: {{ selectedItem.category }}</p>
+                    <p class="mb-1">Quantity: {{ selectedItem.quantity }} {{ selectedItem.unit }}</p>
+                    <p class="mb-0">Location: {{ selectedItem.location }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1">Cost: ${{ selectedItem.cost.toFixed(2) }}</p>
+                    <p class="mb-1">Purchase Date: {{ formatDate(selectedItem.purchaseDate) }}</p>
+                    <p class="mb-0">Expiration Date: {{ formatDate(selectedItem.expirationDate) }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirmation Dialog -->
+            <div *ngIf="showDetails" id="confirmDialog">
+              <div class="alert alert-warning">
+                <strong>Warning:</strong> This will permanently delete "<strong>{{ selectedItem?.ingredientName }}</strong>". This action cannot be undone.
+              </div>
+
+              <div class="form-check mb-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="confirmCheck"
+                  [(ngModel)]="confirmChecked">
+                <label class="form-check-label text-danger fw-bold" for="confirmCheck">
+                  I understand and want to permanently delete this inventory item
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-center">
+          <button class="btn btn-secondary me-2" (click)="goBack()">Back to Inventory</button>
+          <button
+            *ngIf="showDetails"
+            type="button"
+            class="btn btn-outline-info me-2"
+            (click)="resetForm()">
+            Reset
+          </button>
+          <button
+            *ngIf="showDetails"
+            type="button"
+            class="btn btn-danger"
+            [disabled]="!confirmChecked"
+            (click)="onDelete()">
+            Delete Item
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

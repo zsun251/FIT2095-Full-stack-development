@@ -1,0 +1,307 @@
+<div class="container my-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-gradient mb-0">
+          All Inventory Items
+        </h2>
+        <div class="btn-group" role="group">
+          <a routerLink="/inventory/add" class="btn btn-success">
+            Add
+          </a>
+          <a routerLink="/inventory/edit" class="btn btn-primary">
+            Edit
+          </a>
+          <a routerLink="/inventory/delete" class="btn btn-danger">
+            Delete
+          </a>
+          <a routerLink="/dashboard" class="btn btn-outline-secondary">
+            Home
+          </a>
+        </div>
+      </div>
+
+      <!-- Error Alert -->
+      @if (error) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ error }}
+          <button type="button" class="btn-close" (click)="error = null" aria-label="Close"></button>
+        </div>
+      }
+
+      <!-- Loading State -->
+      @if (loading) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading inventory...</p>
+        </div>
+      }
+
+      <!-- Inventory Table -->
+      @if (!loading) {
+        <div class="card shadow-soft rounded-lg">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+              Inventory Collection
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            @if (inventory.length === 0) {
+              <div class="text-center py-5">
+                <h4 class="text-muted">No Inventory Items Found</h4>
+                <p class="text-muted mb-4">Start building your inventory by adding your first item!</p>
+                <a routerLink="/inventory/add" class="btn btn-primary">
+                  Add Your First Item
+                </a>
+              </div>
+            } @else {
+              <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0" style="font-size: 0.9rem;">
+                  <thead class="table-dark">
+                    <tr>
+                      <th scope="col" class="text-center" style="width: 3%;">#</th>
+                      <th scope="col" style="width: 18%;">Ingredient Name</th>
+                      <th scope="col" class="text-center" style="width: 10%;">Quantity & Unit</th>
+                      <th scope="col" style="width: 10%;">Category</th>
+                      <th scope="col" style="width: 8%;">Location</th>
+                      <th scope="col" class="text-center" style="width: 8%;">Cost</th>
+                      <th scope="col" class="text-center" style="width: 10%;">Purchase Date</th>
+                      <th scope="col" class="text-center" style="width: 10%;">Expiration Date</th>
+                      <th scope="col" class="text-center" style="width: 9%;">Created</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of inventory; track item.inventoryId; let i = $index) {
+                      <tr style="vertical-align: top;">
+                        <td class="text-center fw-bold text-primary" style="padding: 8px;">{{ i + 1 }}</td>
+                        <td style="padding: 8px;">
+                          <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ item.ingredientName }}</div>
+                          <small class="text-muted" style="font-size: 0.7rem;">ID: {{ item.inventoryId }}</small>
+                        </td>
+                        <td class="text-center" style="padding: 8px;">
+                          <span class="fw-bold" style="font-size: 0.85rem;">{{ item.quantity }}</span>
+                          <span class="badge bg-light text-dark ms-1" style="font-size: 0.7rem;">{{ item.unit }}</span>
+                          <div class="mt-1">
+                            <small class="text-muted" style="font-size: 0.65rem;">
+                              {{ getUnitLabel(item.unit) }}
+                            </small>
+                          </div>
+                        </td>
+                        <td style="padding: 8px;">
+                          <span [class]="'badge ' + getCategoryBadgeClass(item.category)" style="font-size: 0.7rem;">
+                            {{ item.category }}
+                          </span>
+                          <div class="mt-1">
+                            <small class="text-muted" style="font-size: 0.65rem;">
+                              {{ getCategorySubtext(item.category) }}
+                            </small>
+                          </div>
+                        </td>
+                        <td style="padding: 8px;">
+                          <span [class]="'badge ' + getLocationBadgeClass(item.location)" style="font-size: 0.7rem;">
+                            {{ item.location }}
+                          </span>
+                        </td>
+                        <td class="text-center" style="padding: 8px;">
+                          <span class="fw-bold text-success" style="font-size: 0.8rem;">${{ formatCurrency(item.cost) }}</span>
+                        </td>
+                        <td class="text-center" style="padding: 8px;">
+                          <small class="text-muted" style="font-size: 0.7rem;">
+                            {{ formatDate(item.purchaseDate) }}
+                          </small>
+                        </td>
+                        <td class="text-center" style="padding: 8px;">
+                          <small class="text-muted" style="font-size: 0.7rem;">
+                            {{ formatDate(item.expirationDate) }}
+                          </small>
+                        </td>
+                        <td class="text-center" style="padding: 8px;">
+                          <small class="text-muted" style="font-size: 0.7rem;">
+                            {{ formatDate(item.createdDate) }}
+                          </small>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Summary Footer -->
+        @if (inventory.length > 0) {
+          <div class="mt-4 text-center">
+            <p class="text-muted">
+              Showing {{ inventory.length }} item{{ inventory.length !== 1 ? 's' : '' }} in your inventory
+              | Total Value: ${{ formatCurrency(getTotalInventoryValue()) }}
+            </p>
+          </div>
+        }
+      }
+
+      <!-- Alerts Section -->
+      @if (!loading) {
+        <div class="mt-5">
+          <h2 class="text-gradient mb-3">Inventory Alerts</h2>
+
+          <!-- Alert Summary Cards -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card border-danger">
+                <div class="card-body text-center">
+                  <h4 class="text-danger">{{ expiredItems.length }}</h4>
+                  <p class="mb-0">Expired Items</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-warning">
+                <div class="card-body text-center">
+                  <h4 class="text-warning">{{ expiringItems.length }}</h4>
+                  <p class="mb-0">Expiring Soon</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-info">
+                <div class="card-body text-center">
+                  <h4 class="text-info">{{ lowStockItems.length }}</h4>
+                  <p class="mb-0">Low Stock</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-success">
+                <div class="card-body text-center">
+                  <h4 class="text-success">${{ formatCurrency(getTotalInventoryValue()) }}</h4>
+                  <p class="mb-0">Inventory Value</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expired Items -->
+          @if (expiredItems.length > 0) {
+            <div class="card mb-3">
+              <div class="card-header bg-danger text-white">
+                <h6 class="mb-0">Expired Items ({{ expiredItems.length }})</h6>
+              </div>
+              <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Quantity</th>
+                      <th>Location</th>
+                      <th>Date</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of expiredItems; track item.inventoryId) {
+                      <tr>
+                        <td>
+                          <strong>{{ item.ingredientName }}</strong>
+                          <br><small>{{ item.category }}</small>
+                        </td>
+                        <td>{{ item.quantity }} {{ item.unit }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>{{ formatDate(item.expirationDate) }}</td>
+                        <td>${{ formatCurrency(item.cost) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+
+          <!-- Expiring Soon Items -->
+          @if (expiringItems.length > 0) {
+            <div class="card mb-3">
+              <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">Expiring Soon ({{ expiringItems.length }})</h6>
+              </div>
+              <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Quantity</th>
+                      <th>Location</th>
+                      <th>Date</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of expiringItems; track item.inventoryId) {
+                      <tr>
+                        <td>
+                          <strong>{{ item.ingredientName }}</strong>
+                          <br><small>{{ item.category }}</small>
+                        </td>
+                        <td>{{ item.quantity }} {{ item.unit }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>{{ formatDate(item.expirationDate) }}</td>
+                        <td>${{ formatCurrency(item.cost) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+
+          <!-- Low Stock Items -->
+          @if (lowStockItems.length > 0) {
+            <div class="card mb-3">
+              <div class="card-header bg-info text-white">
+                <h6 class="mb-0">Low Stock ({{ lowStockItems.length }})</h6>
+              </div>
+              <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Quantity</th>
+                      <th>Location</th>
+                      <th>Date</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of lowStockItems; track item.inventoryId) {
+                      <tr>
+                        <td>
+                          <strong>{{ item.ingredientName }}</strong>
+                          <br><small>{{ item.category }}</small>
+                        </td>
+                        <td>{{ item.quantity }} {{ item.unit }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>{{ formatDate(item.purchaseDate) }}</td>
+                        <td>${{ formatCurrency(item.cost) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+
+          <!-- No Alerts -->
+          @if (expiredItems.length === 0 && expiringItems.length === 0 && lowStockItems.length === 0) {
+            <div class="card">
+              <div class="card-body text-center">
+                <h5 class="text-success">All Clear!</h5>
+                <p class="text-muted mb-0">No alerts at this time.</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
