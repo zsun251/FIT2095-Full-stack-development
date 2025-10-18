@@ -25,4 +25,17 @@ export interface InventoryRequest {
   expirationDate: string;
   location: string;
   cost: number;
+  userId: string;
+}
+
+export interface InventoryResponse {
+  success: boolean;
+  data?: {
+    inventory?: Inventory[];
+    expiredItems?: Inventory[];
+    expiringItems?: Inventory[];
+    lowStockItems?: Inventory[];
+  } | Inventory;
+  message?: string;
+  error?: string;
 }

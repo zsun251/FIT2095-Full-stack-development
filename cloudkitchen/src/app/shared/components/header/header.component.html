@@ -16,18 +16,20 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-            Home
-          </a>
-        </li>
-
         @if (isLoggedIn) {
+          <!-- Dashboard Link -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              Dashboard
+            </a>
+          </li>
+
+
           <!-- Chef: Show Recipes -->
           @if (hasRole('chef')) {
             <li class="nav-item">
               <a class="nav-link" [routerLink]="['/recipes']" routerLinkActive="active">
-                <i class="fas fa-utensils"></i> Recipes
+                Recipes
               </a>
             </li>
           }
@@ -35,7 +37,7 @@
           <!-- All roles: Show Inventory -->
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/inventory']" routerLinkActive="active">
-              <i class="fas fa-boxes"></i> Inventory
+              Inventory
             </a>
           </li>
 
@@ -43,7 +45,7 @@
           @if (hasRole('admin')) {
             <li class="nav-item">
               <a class="nav-link" [routerLink]="['/reports']" routerLinkActive="active">
-                <i class="fas fa-chart-bar"></i> Reports
+                Reports
               </a>
             </li>
           }
@@ -52,7 +54,7 @@
           @if (hasRole('manager')) {
             <li class="nav-item">
               <a class="nav-link" [routerLink]="['/inventory/insights']" routerLinkActive="active">
-                <i class="fas fa-brain"></i> Insights
+                Insights
               </a>
             </li>
           }
@@ -66,7 +68,7 @@
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false">
-              <i class="fas fa-user"></i> {{ currentUser?.fullname }}
+              {{ currentUser?.fullname }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><span class="dropdown-item-text"><strong>{{ currentUser?.email }}</strong></span></li>
@@ -74,7 +76,7 @@
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item" href="#" (click)="onLogout(); $event.preventDefault()">
-                  <i class="fas fa-sign-out-alt"></i> Logout
+                  Logout
                 </a>
               </li>
             </ul>

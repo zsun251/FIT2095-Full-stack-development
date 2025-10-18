@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <div class="error-template">
+        <!-- 404 Error Display -->
+        <h1 class="error-code">404</h1>
+
+        <!-- Error Message -->
+        <h2 class="error-title">Page Not Found</h2>
+        <p class="error-description">
+          Oops! The page you are looking for doesn't exist or has been moved.
+        </p>
+
+        <!-- Helpful Information -->
+        <div class="error-details">
+          <p>Here are some helpful links instead:</p>
+          <div class="error-actions">
+            <a routerLink="/dashboard" class="btn btn-primary btn-lg me-2 mb-2">
+              Go to Dashboard
+            </a>
+            <a routerLink="/login" class="btn btn-outline-primary btn-lg mb-2">
+              Go to Login
+            </a>
+          </div>
+        </div>
+
+
+        <!-- Student Information -->
+        <div class="student-info-box mt-4">
+          <p class="small text-muted mb-0">FIT2095 Assignment 3 - Student ID: {{ studentId }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
