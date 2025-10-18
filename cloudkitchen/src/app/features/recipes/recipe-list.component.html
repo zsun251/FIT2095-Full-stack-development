@@ -18,15 +18,18 @@
             </button>
           </div>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-          <!-- Primary Action -->
-          <a routerLink="/recipes/add" class="btn btn-primary">
-            Add Recipe
+        <div class="btn-group" role="group">
+          <a routerLink="/recipes/add" class="btn btn-success">
+            Add
           </a>
-
-          <!-- Navigation -->
+          <a routerLink="/recipes/edit" class="btn btn-primary">
+            Edit
+          </a>
+          <a routerLink="/recipes/delete" class="btn btn-danger">
+            Delete
+          </a>
           <a routerLink="/dashboard" class="btn btn-outline-secondary">
-            Dashboard
+            Home
           </a>
         </div>
       </div>
@@ -82,7 +85,6 @@
                       <th scope="col" class="text-center" style="width: 6%;">Difficulty</th>
                       <th scope="col" class="text-center" style="width: 4%;">Servings</th>
                       <th scope="col" class="text-center" style="width: 8%;">Created</th>
-                      <th scope="col" class="text-center" style="width: 10%;">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -90,7 +92,9 @@
                       <tr style="vertical-align: top;">
                         <td class="text-center fw-bold text-primary" style="padding: 8px;">{{ i + 1 }}</td>
                         <td style="padding: 8px;">
-                          <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ recipe.title }}</div>
+                          <a [routerLink]="['/recipes', recipe.recipeId]" class="text-decoration-none">
+                            <div class="fw-bold text-primary" style="font-size: 0.85rem; cursor: pointer;">{{ recipe.title }}</div>
+                          </a>
                           <small class="text-muted" style="font-size: 0.7rem;">ID: {{ recipe.recipeId }}</small>
                         </td>
                         <td style="padding: 8px; font-size: 0.8rem;">{{ recipe.chef }}</td>
@@ -143,14 +147,6 @@
                             {{ formatDate(recipe.createdDate) }}
                           </small>
                         </td>
-                        <td class="text-center" style="padding: 8px;">
-                          <div class="d-flex flex-column gap-1">
-                            <a [routerLink]="['/recipes/edit', recipe.recipeId]"
-                               class="btn btn-sm btn-outline-primary" style="font-size: 0.7rem; padding: 2px 6px;">Edit</a>
-                            <button (click)="deleteRecipe(recipe.recipeId, recipe.title)"
-                                    type="button" class="btn btn-sm btn-outline-danger" style="font-size: 0.7rem; padding: 2px 6px;">Delete</button>
-                          </div>
-                        </td>
                       </tr>
                     }
                   </tbody>
@@ -172,3 +168,78 @@
     </div>
   </div>
 </div>
+
+<!-- Health Analysis Modal -->
+@if (showAnalysisModal && healthAnalysis) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">AI Health Analysis</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeAnalysisModal()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Health Score -->
+          <div class="text-center mb-4">
+            <h3 class="mb-2">Health Score</h3>
+            <div class="progress" style="height: 30px;">
+              <div [class]="'progress-bar ' + getHealthScoreClass(healthAnalysis.healthScore)"
+                   role="progressbar"
+                   [style.width.%]="healthAnalysis.healthScore"
+                   [attr.aria-valuenow]="healthAnalysis.healthScore"
+                   aria-valuemin="0"
+                   aria-valuemax="100">
+                <strong style="font-size: 1.1rem;">{{ healthAnalysis.healthScore }}/100</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health Concerns -->
+          @if (healthAnalysis.concerns && healthAnalysis.concerns.length > 0) {
+            <div class="mb-4">
+              <h5 class="text-danger">Health Concerns</h5>
+              <ul class="list-group">
+                @for (concern of healthAnalysis.concerns; track concern) {
+                  <li class="list-group-item list-group-item-danger">
+                    {{ concern }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          <!-- Nutritional Strengths -->
+          @if (healthAnalysis.strengths && healthAnalysis.strengths.length > 0) {
+            <div class="mb-4">
+              <h5 class="text-success">Nutritional Strengths</h5>
+              <ul class="list-group">
+                @for (strength of healthAnalysis.strengths; track strength) {
+                  <li class="list-group-item list-group-item-success">
+                    {{ strength }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          <!-- Improvement Suggestions -->
+          @if (healthAnalysis.suggestions && healthAnalysis.suggestions.length > 0) {
+            <div class="mb-3">
+              <h5 class="text-info">Improvement Suggestions</h5>
+              <ul class="list-group">
+                @for (suggestion of healthAnalysis.suggestions; track suggestion) {
+                  <li class="list-group-item list-group-item-info">
+                    {{ suggestion }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAnalysisModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RecipeService } from '../../core/services/recipe.service';
 import { AuthService } from '../../core/services/auth.service';
+import { AiService, HealthAnalysis } from '../../core/services/ai.service';
 import { Recipe } from '../../shared/models/recipe.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { Recipe } from '../../shared/models/recipe.model';
 export class RecipeListComponent implements OnInit {
   private recipeService = inject(RecipeService);
   private authService = inject(AuthService);
+  private aiService = inject(AiService);
 
   recipes: Recipe[] = [];
   filteredRecipes: Recipe[] = [];
@@ -21,6 +23,9 @@ export class RecipeListComponent implements OnInit {
   error: string | null = null;
   showAll = true;
   currentUserId: string | null = null;
+  analyzingRecipeId: string | null = null;
+  healthAnalysis: HealthAnalysis | null = null;
+  showAnalysisModal = false;
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -102,5 +107,37 @@ export class RecipeListComponent implements OnInit {
 
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString();
+  }
+
+  analyzeHealth(recipeId: string): void {
+    this.analyzingRecipeId = recipeId;
+    this.error = null;
+
+    this.aiService.analyzeRecipeHealth(recipeId).subscribe({
+      next: (response) => {
+        this.analyzingRecipeId = null;
+        if (response.success && response.data) {
+          this.healthAnalysis = response.data;
+          this.showAnalysisModal = true;
+        } else {
+          this.error = response.error || 'Failed to analyze recipe health';
+        }
+      },
+      error: (err) => {
+        this.analyzingRecipeId = null;
+        this.error = err.message || 'Failed to analyze recipe health';
+      }
+    });
+  }
+
+  closeAnalysisModal(): void {
+    this.showAnalysisModal = false;
+    this.healthAnalysis = null;
+  }
+
+  getHealthScoreClass(score: number): string {
+    if (score >= 80) return 'bg-success';
+    if (score >= 60) return 'bg-warning';
+    return 'bg-danger';
   }
 }

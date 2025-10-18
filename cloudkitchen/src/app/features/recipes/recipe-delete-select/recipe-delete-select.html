@@ -1,0 +1,107 @@
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-danger text-white text-center">
+          <h4 class="mb-0">Delete Recipe</h4>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+
+          <!-- No Recipes -->
+          <div *ngIf="!loading && recipes.length === 0" class="text-center py-4">
+            <h5>No Recipes Available</h5>
+            <p class="text-muted">There are no recipes to delete.</p>
+            <a routerLink="/recipes/add" class="btn btn-primary">Add New Recipe</a>
+          </div>
+
+          <!-- Recipe Selection -->
+          <div *ngIf="!loading && recipes.length > 0">
+            <div class="mb-3">
+              <label for="recipeSelect" class="form-label">Select Recipe:</label>
+              <select
+                class="form-select"
+                id="recipeSelect"
+                [(ngModel)]="selectedRecipeId"
+                (change)="onRecipeSelect()">
+                <option value="">Choose a recipe to delete...</option>
+                <option
+                  *ngFor="let recipe of recipes"
+                  [value]="recipe.recipeId">
+                  {{ recipe.title }} (by {{ recipe.chef }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Recipe Details -->
+            <div *ngIf="showDetails && selectedRecipe" id="recipeDetails" class="mb-3">
+              <div class="alert alert-info">
+                <h6>Recipe Details:</h6>
+                <p class="mb-1"><strong>{{ selectedRecipe.title }}</strong> by {{ selectedRecipe.chef }}</p>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-1">ID: <span class="text-primary fw-bold">{{ selectedRecipe.recipeId }}</span></p>
+                    <p class="mb-1">Cuisine: {{ selectedRecipe.cuisineType }}</p>
+                    <p class="mb-0">Meal Type: {{ selectedRecipe.mealType }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1">Difficulty: {{ selectedRecipe.difficulty }}</p>
+                    <p class="mb-1">Prep Time: {{ selectedRecipe.prepTime }} minutes</p>
+                    <p class="mb-0">Servings: {{ selectedRecipe.servings }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirmation Dialog -->
+            <div *ngIf="showDetails" id="confirmDialog">
+              <div class="alert alert-warning">
+                <strong>Warning:</strong> This will permanently delete "<strong>{{ selectedRecipe?.title }}</strong>". This action cannot be undone.
+              </div>
+
+              <div class="form-check mb-3">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="confirmCheck"
+                  [(ngModel)]="confirmChecked">
+                <label class="form-check-label text-danger fw-bold" for="confirmCheck">
+                  I understand and want to permanently delete this recipe
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-center">
+          <button class="btn btn-secondary me-2" (click)="goBack()">Back to Recipes</button>
+          <button
+            *ngIf="showDetails"
+            type="button"
+            class="btn btn-outline-info me-2"
+            (click)="resetForm()">
+            Reset
+          </button>
+          <button
+            *ngIf="showDetails"
+            type="button"
+            class="btn btn-danger"
+            [disabled]="!confirmChecked"
+            (click)="onDelete()">
+            Delete Recipe
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
