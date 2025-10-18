@@ -1,28 +1,41 @@
 import { Routes } from '@angular/router';
+
+// Guards
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
-// Import components
-import { DashboardComponent } from './features/dashboard/dashboard.component';
+// Auth Components
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
+
+// Dashboard
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+
+// Recipe Components
 import { RecipeListComponent } from './features/recipes/recipe-list.component';
 import { RecipeFormComponent } from './features/recipes/recipe-form.component';
+import { RecipeDetailComponent } from './features/recipes/recipe-detail.component';
 import { RecipeEditSelect } from './features/recipes/recipe-edit-select/recipe-edit-select';
 import { RecipeDeleteSelect } from './features/recipes/recipe-delete-select/recipe-delete-select';
+
+// Inventory Components
 import { InventoryListComponent } from './features/inventory/inventory-list.component';
 import { InventoryFormComponent } from './features/inventory/inventory-form.component';
 import { InventoryEditSelect } from './features/inventory/inventory-edit-select/inventory-edit-select';
 import { InventoryDeleteSelect } from './features/inventory/inventory-delete-select/inventory-delete-select';
+
+// Shared Components
 import { ErrorComponent } from './shared/components/error/error.component';
 
 export const routes: Routes = [
-  // Default route - redirect to login
+  // Default route
   {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
   },
+
+  // Public routes
   {
     path: 'login',
     component: LoginComponent
@@ -31,16 +44,15 @@ export const routes: Routes = [
     path: 'register',
     component: RegisterComponent
   },
-  // Dashboard - requires authentication
+
+  // Protected routes - Dashboard
   {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard]
   },
 
-  // Protected routes - require authentication
-
-  // Recipe routes (Chef only)
+  // Protected routes - Recipes (Chef only)
   {
     path: 'recipes',
     canActivate: [authGuard, roleGuard],
@@ -61,11 +73,15 @@ export const routes: Routes = [
       {
         path: 'delete',
         component: RecipeDeleteSelect
+      },
+      {
+        path: ':id',
+        component: RecipeDetailComponent
       }
     ]
   },
 
-  // Inventory routes (All authenticated users)
+  // Protected routes - Inventory (All authenticated users)
   {
     path: 'inventory',
     canActivate: [authGuard],
@@ -94,7 +110,7 @@ export const routes: Routes = [
     ]
   },
 
-  // Reports routes (Admin only) - will be implemented in next tasks
+  // Future: Reports routes (Admin only)
   // {
   //   path: 'reports',
   //   canActivate: [authGuard, roleGuard],
@@ -102,7 +118,7 @@ export const routes: Routes = [
   //   loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORT_ROUTES)
   // },
 
-  // 404 Not Found - Wildcard route must be last
+  // Wildcard route - must be last
   {
     path: '**',
     component: ErrorComponent
