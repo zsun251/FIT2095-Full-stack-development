@@ -20,6 +20,7 @@ const recipeRoutes = require('./routes/recipes');
 const inventoryRoutes = require('./routes/inventory');
 const authRoutes = require('./routes/auth');
 const reportRoutes = require('./routes/reports');
+const translationRoutes = require('./routes/translation');
 
 // Create Express application
 const app = express();
@@ -43,6 +44,9 @@ app.use(cors({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Serve static audio files
+app.use('/audio', express.static('public/audio'));
 
 // User session middleware - sets current user globally
 app.use(setCurrentUser);
@@ -76,6 +80,9 @@ app.use('/', authRoutes);
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 
+// Translation routes (HD Task 2)
+app.use('/api/translation', translationRoutes);
+
 // ============================================
 // ERROR HANDLING
 // JSON API error responses only
@@ -102,14 +109,80 @@ app.use((error, _req, res, _next) => {
 });
 
 // ============================================
-// START SERVER
+// START SERVER WITH SOCKET.IO
 // ============================================
 
-app.listen(port, () => {
+const http = require('http');
+const { Server } = require('socket.io');
+
+const server = http.createServer(app);
+
+// Initialize Socket.IO with CORS
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:4200',
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
+
+// Socket.IO event handlers
+const textToSpeechService = require('./services/textToSpeechService');
+const Recipe = require('./models/Recipe');
+
+io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+
+    // Handle text-to-speech request
+    socket.on('generate-speech', async (data) => {
+        try {
+            const { recipeId } = data;
+
+            // Fetch recipe
+            const recipe = await Recipe.findOne({ recipeId });
+            if (!recipe) {
+                socket.emit('speech-error', { error: 'Recipe not found' });
+                return;
+            }
+
+            // Generate speech
+            socket.emit('speech-generating', { message: 'Generating audio...' });
+
+            const result = await textToSpeechService.synthesizeRecipeInstructions(
+                recipe.instructions,
+                recipeId
+            );
+
+            if (result.success) {
+                socket.emit('speech-ready', {
+                    audioUrl: result.audioUrl,
+                    recipeId
+                });
+            } else {
+                socket.emit('speech-error', { error: result.error });
+            }
+        } catch (error) {
+            console.error('Socket.IO error:', error);
+            socket.emit('speech-error', { error: error.message });
+        }
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+});
+
+// Cleanup old audio files every hour
+setInterval(() => {
+    textToSpeechService.cleanupOldAudioFiles();
+}, 60 * 60 * 1000);
+
+server.listen(port, () => {
     console.log(`CloudKitchen Pro Server Started`);
     console.log(`Student: Zhan Sun ()`);
     console.log(`Server: http://localhost:${port}`);
     console.log(`Database: MongoDB`);
+    console.log(`Socket.IO: Enabled`);
 });
 
 module.exports = app;

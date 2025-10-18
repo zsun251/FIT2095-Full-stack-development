@@ -10,4 +10,7 @@ router.post('/', RecipeController.addRecipeAPI);
 router.put('/:recipeId', RecipeController.updateRecipeAPI);
 router.delete('/:recipeId', RecipeController.deleteRecipeAPI);
 
+// AI-powered health analysis
+router.post('/:recipeId/analyze-health', RecipeController.analyzeRecipeHealthAPI);
+
 module.exports = router;
