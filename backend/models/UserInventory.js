@@ -62,11 +62,14 @@ const userInventorySchema = new mongoose.Schema({
             },
             {
                 validator: function(date) {
-                    const dateStr = date.toISOString().split('T')[0];
-                    const regex = /^\d{4}-\d{2}-\d{2}$/;
-                    return regex.test(dateStr);
+                    // Ensure time is set to 00:00:00.000Z
+                    const hours = date.getUTCHours();
+                    const minutes = date.getUTCMinutes();
+                    const seconds = date.getUTCSeconds();
+                    const ms = date.getUTCMilliseconds();
+                    return hours === 0 && minutes === 0 && seconds === 0 && ms === 0;
                 },
-                message: 'Purchase date must be in YYYY-MM-DD format'
+                message: 'Purchase date must have time set to 00:00:00.000Z (format: 2025-07-21T00:00:00.000Z)'
             }
         ]
     },
@@ -99,11 +102,14 @@ const userInventorySchema = new mongoose.Schema({
             },
             {
                 validator: function(date) {
-                    const dateStr = date.toISOString().split('T')[0];
-                    const regex = /^\d{4}-\d{2}-\d{2}$/;
-                    return regex.test(dateStr);
+                    // Ensure time is set to 00:00:00.000Z
+                    const hours = date.getUTCHours();
+                    const minutes = date.getUTCMinutes();
+                    const seconds = date.getUTCSeconds();
+                    const ms = date.getUTCMilliseconds();
+                    return hours === 0 && minutes === 0 && seconds === 0 && ms === 0;
                 },
-                message: 'Expiration date must be in YYYY-MM-DD format'
+                message: 'Expiration date must have time set to 00:00:00.000Z (format: 2025-07-21T00:00:00.000Z)'
             }
         ]
     },
@@ -130,7 +136,11 @@ const userInventorySchema = new mongoose.Schema({
     createdDate: {
         type: Date,
         required: true,
-        default: Date.now,
+        default: function() {
+            // Set time to 00:00:00.000Z
+            const now = new Date();
+            return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+        },
         validate: [
             {
                 validator: function(date) {
@@ -142,11 +152,14 @@ const userInventorySchema = new mongoose.Schema({
             },
             {
                 validator: function(date) {
-                    const dateStr = date.toISOString().split('T')[0];
-                    const regex = /^\d{4}-\d{2}-\d{2}$/;
-                    return regex.test(dateStr);
+                    // Ensure time is set to 00:00:00.000Z
+                    const hours = date.getUTCHours();
+                    const minutes = date.getUTCMinutes();
+                    const seconds = date.getUTCSeconds();
+                    const ms = date.getUTCMilliseconds();
+                    return hours === 0 && minutes === 0 && seconds === 0 && ms === 0;
                 },
-                message: 'Created date must be in YYYY-MM-DD format'
+                message: 'Created date must have time set to 00:00:00.000Z (format: 2025-07-21T00:00:00.000Z)'
             }
         ]
     }

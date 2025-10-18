@@ -1,5 +1,6 @@
 const Recipe = require('../models/Recipe');
 const User = require('../models/User');
+const aiService = require('../services/aiService');
 
 class RecipeController {
     // Get all recipes
@@ -704,6 +705,39 @@ class RecipeController {
             res.json({
                 success: false,
                 error: 'An error occurred while deleting the recipe'
+            });
+        }
+    }
+
+    // AI-powered health analysis (JSON)
+    static async analyzeRecipeHealthAPI(req, res) {
+        try {
+            const recipeId = req.params.recipeId;
+            const recipe = await Recipe.findOne({ recipeId: recipeId });
+
+            if (!recipe) {
+                return res.json({
+                    success: false,
+                    error: 'Recipe not found'
+                });
+            }
+
+            // Prepare ingredients string for AI analysis
+            const ingredientsText = recipe.ingredients.join(', ');
+
+            // Call AI service
+            const analysis = await aiService.analyzeRecipeHealth(ingredientsText);
+
+            res.json({
+                success: true,
+                data: analysis
+            });
+
+        } catch (error) {
+            console.error('Error analyzing recipe health:', error);
+            res.json({
+                success: false,
+                error: error.message || 'Failed to analyze recipe health'
             });
         }
     }

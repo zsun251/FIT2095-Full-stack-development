@@ -48,11 +48,11 @@ const userSchema = new mongoose.Schema({
         trim: true,
         validate: {
             validator: function(phone) {
-                return /^\+61[- ]?[2-9]\d{8}$/.test(phone) || 
-                       /^0[2-9]\d{8}$/.test(phone) || 
-                       /^\([0-9]{2}\)[- ]?\d{4}[- ]?\d{4}$/.test(phone);
+                // Only accept: +61 412 345 678 or +61-412-345-678
+                return /^\+61 \d{3} \d{3} \d{3}$/.test(phone) ||
+                       /^\+61-\d{3}-\d{3}-\d{3}$/.test(phone);
             },
-            message: 'Please provide a valid Australian phone number'
+            message: 'Phone number must be in format +61 412 345 678 or +61-412-345-678'
         }
     },
     isLoggedIn: {
