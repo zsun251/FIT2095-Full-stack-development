@@ -196,15 +196,14 @@ export class AuthService {
 
   /**
    * Validate Australian phone number
-   * Matches Assignment 2 validation logic
+   * Matches backend validation logic: +61 412 345 678 or +61-412-345-678
    * @param phone Phone number to validate
    * @returns boolean
    */
   validatePhoneNumber(phone: string): boolean {
     const patterns = [
-      /^\+61[- ]?[2-9]\d{8}$/,  // +61 format
-      /^0[2-9]\d{8}$/,           // 0 format
-      /^\([0-9]{2}\)[- ]?\d{4}[- ]?\d{4}$/  // (XX) XXXX XXXX format
+      /^\+61 \d{3} \d{3} \d{3}$/,    // +61 412 345 678
+      /^\+61-\d{3}-\d{3}-\d{3}$/     // +61-412-345-678
     ];
 
     return patterns.some(pattern => pattern.test(phone));

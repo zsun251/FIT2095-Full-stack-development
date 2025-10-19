@@ -48,6 +48,10 @@ app.use(express.json());
 // Serve static audio files
 app.use('/audio', express.static('public/audio'));
 
+// Serve Angular frontend static files
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../cloudkitchen/dist/cloudkitchen/browser')));
+
 // User session middleware - sets current user globally
 app.use(setCurrentUser);
 
@@ -84,18 +88,29 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/translation', translationRoutes);
 
 // ============================================
+// ANGULAR FRONTEND FALLBACK
+// All non-API routes serve Angular index.html
+// ============================================
+
+// Serve Angular app for all non-API routes
+app.use((req, res) => {
+    // If request is for API, return 404
+    if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/reports') || req.originalUrl.startsWith('/inventory-insights') || req.originalUrl.startsWith('/recommendations')) {
+        return res.status(404).json({
+            success: false,
+            error: 'API endpoint not found',
+            statusCode: 404
+        });
+    }
+
+    // Otherwise serve Angular index.html
+    res.sendFile(path.join(__dirname, '../cloudkitchen/dist/cloudkitchen/browser/index.html'));
+});
+
+// ============================================
 // ERROR HANDLING
 // JSON API error responses only
 // ============================================
-
-// 404 handler - API endpoint not found
-app.use((_req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'API endpoint not found',
-        statusCode: 404
-    });
-});
 
 // Global error handler - Server errors
 app.use((error, _req, res, _next) => {

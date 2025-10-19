@@ -88,13 +88,13 @@ userSchema.methods.comparePassword = function(candidatePassword) {
 userSchema.methods.login = async function() {
     this.isLoggedIn = true;
     this.lastLoginDate = new Date();
-    await this.save();
+    await this.save({ validateModifiedOnly: true });
 };
 
 // Logout method - update MongoDB session status
 userSchema.methods.logout = async function() {
     this.isLoggedIn = false;
-    await this.save();
+    await this.save({ validateModifiedOnly: true });
 };
 
 module.exports = mongoose.model('User', userSchema);
