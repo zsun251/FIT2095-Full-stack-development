@@ -20,7 +20,7 @@ export interface SpeechErrorEvent {
 })
 export class SocketService {
   private socket: Socket;
-  private readonly SOCKET_URL = 'http://localhost:3000';
+  private readonly SOCKET_URL = window.location.origin;
 
   constructor() {
     this.socket = io(this.SOCKET_URL, {

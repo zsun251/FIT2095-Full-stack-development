@@ -19,15 +19,22 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 })
 export class App {
   title = 'CloudKitchen Pro - Recipe & Inventory Management';
-  showHeaderFooter = true;
+  showHeaderFooter = false;
 
   constructor(private router: Router) {
-    // Hide header/footer on login and register pages
+    // Check current route and update header/footer visibility
+    const updateVisibility = (url: string) => {
+      this.showHeaderFooter = !(url.includes('/login') || url.includes('/register'));
+    };
+
+    // Check on init
+    updateVisibility(this.router.url);
+
+    // Listen to route changes
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      const url = event.url;
-      this.showHeaderFooter = !(url.includes('/login') || url.includes('/register'));
+      updateVisibility(event.url);
     });
   }
 }

@@ -28,7 +28,7 @@ export interface DashboardResponse {
 })
 export class DashboardService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/api/dashboard';
+  private readonly API_URL = '/api/dashboard';
 
   /**
    * Get dashboard statistics from backend

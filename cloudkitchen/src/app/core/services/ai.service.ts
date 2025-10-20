@@ -13,7 +13,7 @@ export interface HealthAnalysis {
   providedIn: 'root'
 })
 export class AiService {
-  private readonly apiUrl = 'http://localhost:3000/api/recipes';
+  private readonly apiUrl = '/api/recipes';
 
   constructor(private http: HttpClient) {}
 

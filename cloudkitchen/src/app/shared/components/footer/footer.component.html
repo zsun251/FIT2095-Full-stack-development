@@ -1,7 +1,30 @@
-<footer class="footer mt-auto py-3 bg-dark text-white">
-  <div class="container text-center">
-    <p class="mb-1">© {{ currentYear }} Recipe Hub - Personal Meal Planning Assistant</p>
-    <p class="mb-0">Created by {{ studentName }} ({{ studentId }})</p>
-    <p class="mb-0 small">FIT2095 {{ assignmentNumber }}</p>
+<footer class="footer mt-auto py-4 bg-dark text-white">
+  <div class="container">
+    <div class="row">
+      <!-- Left Column: Application Info -->
+      <div class="col-md-4">
+        <h5 class="mb-3 text-white">CloudKitchen Management System</h5>
+        <p class="text-white mb-1">Student ID: {{ studentId }}</p>
+        <p class="text-white small">A comprehensive recipe and inventory management solution for modern kitchens.</p>
+      </div>
+
+      <!-- Middle Column: Quick Links -->
+      <div class="col-md-4">
+        <h6 class="mb-3 text-white">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="/dashboard" class="text-white text-decoration-none">Dashboard</a></li>
+          <li><a href="/recipes" class="text-white text-decoration-none">Recipes</a></li>
+          <li><a href="/inventory" class="text-white text-decoration-none">Inventory</a></li>
+        </ul>
+      </div>
+
+      <!-- Right Column: Information -->
+      <div class="col-md-4">
+        <h6 class="mb-3 text-white">Information</h6>
+        <p class="text-white mb-1">Monash University</p>
+        <p class="text-white mb-1">FIT2095 {{ assignmentNumber }}</p>
+        <p class="text-white small">© {{ currentYear }} {{ studentName }}</p>
+      </div>
+    </div>
   </div>
 </footer>

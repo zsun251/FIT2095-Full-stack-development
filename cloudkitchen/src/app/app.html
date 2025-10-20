@@ -1,6 +1,6 @@
 <!-- CloudKitchen Pro - Angular Application -->
 <!-- Header Navigation (hidden on login/register) -->
-<app-header *ngIf="showHeaderFooter"></app-header>
+<app-header [style.display]="showHeaderFooter ? 'block' : 'none'"></app-header>
 
 <!-- Main Content Area -->
 <main class="main-content">
@@ -8,4 +8,4 @@
 </main>
 
 <!-- Footer (hidden on login/register) -->
-<app-footer *ngIf="showHeaderFooter"></app-footer>
+<app-footer [style.display]="showHeaderFooter ? 'block' : 'none'"></app-footer>

@@ -11,7 +11,6 @@ export class AuthService {
 
   // API base URL - update this to match your backend
   private readonly API_URL = 'http://localhost:3000';
-  private readonly STUDENT_ID = '';
 
   // Current user state
   private currentUserSubject = new BehaviorSubject<User | null>(null);

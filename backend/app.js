@@ -19,7 +19,6 @@ const { setCurrentUser } = require('./middleware/auth');
 const recipeRoutes = require('./routes/recipes');
 const inventoryRoutes = require('./routes/inventory');
 const authRoutes = require('./routes/auth');
-const reportRoutes = require('./routes/reports');
 const translationRoutes = require('./routes/translation');
 
 // Create Express application
@@ -36,7 +35,7 @@ connectDB();
 
 // CORS Configuration - Allow Angular frontend access
 app.use(cors({
-    origin: 'http://localhost:4200',  // Angular dev server
+    origin: ['http://localhost:4200', 'http://34.126.197.155:3000', 'http://34.126.197.155'],  // Angular dev server and VM
     credentials: true,                 // Allow cookies/sessions
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -58,6 +57,7 @@ app.use(setCurrentUser);
 // ============================================
 // ROUTES CONFIGURATION
 // JSON API only - No server-side rendering
+// Student ID: 
 // ============================================
 
 // Recipe management routes
@@ -66,19 +66,8 @@ app.use('/api/recipes', recipeRoutes);
 // Inventory management routes
 app.use('/api/inventory', inventoryRoutes);
 
-// Report routes (admin only)
-app.use('/reports', reportRoutes);
-
-// Inventory insights routes (manager/admin only)
-const inventoryInsightsRoutes = require('./routes/inventory-insights');
-app.use('/inventory-insights', inventoryInsightsRoutes);
-
-// Recipe recommendations routes (chef only)
-const recommendationsRoutes = require('./routes/recommendations');
-app.use('/recommendations', recommendationsRoutes);
-
 // Auth routes (login, register, logout)
-app.use('/', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // Dashboard API routes
 const dashboardRoutes = require('./routes/dashboard');
@@ -135,7 +124,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO with CORS
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:4200',
+        origin: ['http://localhost:4200', 'http://34.126.197.155:3000', 'http://34.126.197.155'],
         methods: ['GET', 'POST'],
         credentials: true
     }

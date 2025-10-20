@@ -15,7 +15,7 @@ export class InventoryService {
   private http = inject(HttpClient);
 
   // API base URL - matches backend configuration
-  private readonly API_URL = 'http://localhost:3000/api/inventory';
+  private readonly API_URL = '/api/inventory';
 
   /**
    * Get all inventory items with alerts

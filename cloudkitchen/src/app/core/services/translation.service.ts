@@ -32,7 +32,7 @@ export interface LanguagesResponse {
 })
 export class TranslationService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/api/translation';
+  private readonly API_URL = '/api/translation';
 
   /**
    * Translate a recipe to target language
