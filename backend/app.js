@@ -35,7 +35,13 @@ connectDB();
 
 // CORS Configuration - Allow Angular frontend access
 app.use(cors({
-    origin: ['http://localhost:4200', 'http://34.126.197.155:3000', 'http://34.126.197.155'],  // Angular dev server and VM
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, or Postman)
+        if (!origin) return callback(null, true);
+
+        // Allow all origins for now (you can restrict this in production)
+        callback(null, true);
+    },
     credentials: true,                 // Allow cookies/sessions
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -124,7 +130,9 @@ const server = http.createServer(app);
 // Initialize Socket.IO with CORS
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:4200', 'http://34.126.197.155:3000', 'http://34.126.197.155'],
+        origin: function(origin, callback) {
+            callback(null, true); // Allow all origins
+        },
         methods: ['GET', 'POST'],
         credentials: true
     }
