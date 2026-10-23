@@ -37,7 +37,6 @@ class InventoryController {
                 expiredItems: expiredItems,
                 expiringItems: expiringItems,
                 lowStockItems: lowStockItems,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching inventory:', error);
@@ -45,7 +44,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load inventory',
-                studentId: ''
             });
         }
     }
@@ -54,7 +52,6 @@ class InventoryController {
     static getAddForm(_req, res) {
         res.render('inventory/add', {
             title: 'Add New Inventory Item',
-            studentId: '',
             item: null
         });
     }
@@ -142,7 +139,6 @@ class InventoryController {
             if (errors.length > 0) {
                 return res.render('inventory/add', {
                     title: 'Add New Inventory Item',
-                    studentId: '',
                     item: null,
                     error: errors.join('. '),
                     formData: req.body
@@ -174,7 +170,6 @@ class InventoryController {
                 const validationErrors = Object.values(error.errors).map(err => err.message);
                 return res.render('inventory/add', {
                     title: 'Add New Inventory Item',
-                    studentId: '',
                     item: null,
                     error: validationErrors.join('. '),
                     formData: req.body
@@ -185,7 +180,6 @@ class InventoryController {
             if (error.code === 11000) {
                 return res.render('inventory/add', {
                     title: 'Add New Inventory Item',
-                    studentId: '',
                     item: null,
                     error: 'An inventory item with this information already exists.',
                     formData: req.body
@@ -197,7 +191,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'An error occurred while adding the inventory item. Please try again.',
-                studentId: ''
             });
         }
     }
@@ -213,14 +206,12 @@ class InventoryController {
                     title: 'Inventory Item Not Found',
                     statusCode: 404,
                     message: 'The inventory item you are looking for does not exist.',
-                    studentId: ''
                 });
             }
 
             res.render('inventory/add', {
                 title: 'Edit Inventory Item',
                 item: item,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching inventory item for edit:', error);
@@ -228,7 +219,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load inventory item for editing',
-                studentId: ''
             });
         }
     }
@@ -252,7 +242,6 @@ class InventoryController {
                     title: 'Inventory Item Not Found',
                     statusCode: 404,
                     message: 'The inventory item you are trying to update does not exist.',
-                    studentId: ''
                 });
             }
 
@@ -328,7 +317,6 @@ class InventoryController {
             if (errors.length > 0) {
                 return res.render('inventory/add', {
                     title: 'Edit Inventory Item',
-                    studentId: '',
                     item: existingItem,
                     error: errors.join('. '),
                     formData: req.body
@@ -357,7 +345,6 @@ class InventoryController {
                     title: 'Inventory Item Not Found',
                     statusCode: 404,
                     message: 'The inventory item you are trying to update does not exist.',
-                    studentId: ''
                 });
             }
 
@@ -380,7 +367,6 @@ class InventoryController {
                 const validationErrors = Object.values(error.errors).map(err => err.message);
                 return res.render('inventory/add', {
                     title: 'Edit Inventory Item',
-                    studentId: '',
                     item: existingItem,
                     error: validationErrors.join('. '),
                     formData: req.body
@@ -391,7 +377,6 @@ class InventoryController {
             if (error.code === 11000) {
                 return res.render('inventory/add', {
                     title: 'Edit Inventory Item',
-                    studentId: '',
                     item: existingItem,
                     error: 'An inventory item with this information already exists.',
                     formData: req.body
@@ -403,7 +388,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'An error occurred while updating the inventory item. Please try again.',
-                studentId: ''
             });
         }
     }
@@ -415,7 +399,6 @@ class InventoryController {
             res.render('inventory/edit', {
                 title: 'Edit Inventory Item',
                 inventory: inventory,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching inventory for editing:', error);
@@ -423,7 +406,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load inventory for editing',
-                studentId: ''
             });
         }
     }
@@ -435,7 +417,6 @@ class InventoryController {
             res.render('inventory/delete', {
                 title: 'Delete Inventory Item',
                 inventory: inventory,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching inventory for deletion:', error);
@@ -443,7 +424,6 @@ class InventoryController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load inventory for deletion',
-                studentId: ''
             });
         }
     }

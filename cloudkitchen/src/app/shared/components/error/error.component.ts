@@ -13,5 +13,4 @@ import { RouterModule } from '@angular/router';
   templateUrl: './error.component.html'
 })
 export class ErrorComponent {
-  readonly studentId = '';
 }

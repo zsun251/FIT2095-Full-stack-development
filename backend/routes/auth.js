@@ -4,8 +4,6 @@ const AuthController = require('../controllers/AuthController');
 
 /**
  * Authentication Routes - JSON API only (for Angular frontend)
- * Student: Zhan Sun ()
- * Assignment 3 - No EJS, pure REST API
  */
 
 // POST /api/auth/register - Register new user

@@ -41,7 +41,4 @@ import { CommonModule } from '@angular/common';
 })
 export class FooterComponent {
   readonly currentYear = new Date().getFullYear();
-  readonly studentName = 'Zhan Sun';
-  readonly studentId = '';
-  readonly assignmentNumber = 'Assignment 3';
 }

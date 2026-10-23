@@ -155,7 +155,7 @@ export class AuthService {
 
   /**
    * Validate password strength
-   * Matches Assignment 2 validation logic:
+   * Validation rules:
    * - At least 8 characters
    * - Contains uppercase letter
    * - Contains lowercase letter

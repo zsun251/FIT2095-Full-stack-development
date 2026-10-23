@@ -6,7 +6,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Clone the request and add headers if needed
-  // For now, we're using session-based auth from Assignment 2
+  // For now, we're using session-based auth
   // which uses cookies, so no need to add headers
 
   // If you switch to token-based auth, uncomment and modify:

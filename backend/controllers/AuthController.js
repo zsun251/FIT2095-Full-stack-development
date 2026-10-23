@@ -2,8 +2,6 @@ const User = require('../models/User');
 
 /**
  * Authentication Controller - JSON API only (for Angular frontend)
- * Student: Zhan Sun ()
- * Assignment 3 - No EJS, pure REST API
  */
 class AuthController {
     /**

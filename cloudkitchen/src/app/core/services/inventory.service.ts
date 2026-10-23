@@ -6,7 +6,6 @@ import { Inventory, InventoryRequest, InventoryResponse } from '../../shared/mod
 /**
  * Inventory Service - Handles all inventory-related API calls
  * Based on employee-management DatabaseService pattern
- * Student: Zhan Sun ()
  */
 @Injectable({
   providedIn: 'root'

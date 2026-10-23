@@ -1,8 +1,5 @@
 // ============================================
-// CloudKitchen Pro - Assignment 2 MongoDB Integration
-// Student: Zhan Sun
-// Student ID: 
-// Building on Assignment 1 structure
+// CloudKitchen Pro - REST API Server
 // ============================================
 
 const express = require('express');
@@ -63,7 +60,6 @@ app.use(setCurrentUser);
 // ============================================
 // ROUTES CONFIGURATION
 // JSON API only - No server-side rendering
-// Student ID: 
 // ============================================
 
 // Recipe management routes
@@ -191,7 +187,6 @@ setInterval(() => {
 
 server.listen(port, () => {
     console.log(`CloudKitchen Pro Server Started`);
-    console.log(`Student: Zhan Sun ()`);
     console.log(`Server: http://localhost:${port}`);
     console.log(`Database: MongoDB`);
     console.log(`Socket.IO: Enabled`);

@@ -20,7 +20,6 @@ const requireChef = (_req, res, next) => {
             title: 'Access Denied',
             statusCode: 403,
             message: 'Only chefs can access recipe features.',
-            studentId: ''
         });
     }
     next();
@@ -37,7 +36,6 @@ const requireAdmin = (_req, res, next) => {
             title: 'Access Denied',
             statusCode: 403,
             message: 'Admin access required.',
-            studentId: ''
         });
     }
     next();
@@ -54,7 +52,6 @@ const requireManagerOrAdmin = (_req, res, next) => {
             title: 'Access Denied',
             statusCode: 403,
             message: 'Manager or Admin access required.',
-            studentId: ''
         });
     }
     next();

@@ -21,7 +21,6 @@ export interface DashboardResponse {
 
 /**
  * Dashboard Service - Fetches dashboard statistics
- * Student: Zhan Sun ()
  */
 @Injectable({
   providedIn: 'root'

@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect('mongodb://localhost:27017/cloudkitchen-pro');
-        console.log('MongoDB Connected: cloudkitchen-pro');
+        const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cloudkitchen-pro';
+        await mongoose.connect(uri);
+        console.log('MongoDB Connected');
 
         // Handle connection events
         mongoose.connection.on('error', (err) => {

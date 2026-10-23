@@ -15,7 +15,6 @@ class RecipeController {
             res.render('recipes/list', {
                 title: 'All Recipes',
                 recipes: recipes,
-                studentId: '',
                 showAll: true
             });
         } catch (error) {
@@ -24,7 +23,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load recipes',
-                studentId: ''
             });
         }
     }
@@ -42,7 +40,6 @@ class RecipeController {
             res.render('recipes/list', {
                 title: 'My Recipes',
                 recipes: recipes,
-                studentId: '',
                 showAll: false
             });
         } catch (error) {
@@ -51,7 +48,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load your recipes',
-                studentId: ''
             });
         }
     }
@@ -61,7 +57,6 @@ class RecipeController {
         const currentUser = res.locals.currentUser;
         res.render('recipes/add', {
             title: 'Add New Recipe',
-            studentId: '',
             recipe: null,
             currentChef: currentUser ? currentUser.fullname : ''
         });
@@ -151,7 +146,6 @@ class RecipeController {
             if (errors.length > 0) {
                 return res.render('recipes/add', {
                     title: 'Add New Recipe',
-                    studentId: '',
                     recipe: null,
                     error: errors.join('. '),
                     formData: req.body,
@@ -185,7 +179,6 @@ class RecipeController {
                 const validationErrors = Object.values(error.errors).map(err => err.message);
                 return res.render('recipes/add', {
                     title: 'Add New Recipe',
-                    studentId: '',
                     recipe: null,
                     error: validationErrors.join('. '),
                     formData: req.body,
@@ -197,7 +190,6 @@ class RecipeController {
             if (error.code === 11000 || error.message.includes('duplicate')) {
                 return res.render('recipes/add', {
                     title: 'Add New Recipe',
-                    studentId: '',
                     recipe: null,
                     error: 'A recipe with this title already exists. Please choose a different title.',
                     formData: req.body,
@@ -209,7 +201,6 @@ class RecipeController {
             if (error.message.includes('Title must be unique per user')) {
                 return res.render('recipes/add', {
                     title: 'Add New Recipe',
-                    studentId: '',
                     recipe: null,
                     error: 'You already have a recipe with this title. Please choose a different title.',
                     formData: req.body,
@@ -222,7 +213,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'An error occurred while adding the recipe. Please try again.',
-                studentId: ''
             });
         }
     }
@@ -238,14 +228,12 @@ class RecipeController {
                     title: 'Recipe Not Found',
                     statusCode: 404,
                     message: 'The recipe you are looking for does not exist.',
-                    studentId: ''
                 });
             }
 
             res.render('recipes/add', {
                 title: 'Edit Recipe',
                 recipe: recipe,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching recipe for edit:', error);
@@ -253,7 +241,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load recipe for editing',
-                studentId: ''
             });
         }
     }
@@ -291,7 +278,6 @@ class RecipeController {
                     title: 'Recipe Not Found',
                     statusCode: 404,
                     message: 'The recipe you are trying to update does not exist.',
-                    studentId: ''
                 });
             }
 
@@ -304,7 +290,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: error.message,
-                studentId: ''
             });
         }
     }
@@ -316,7 +301,6 @@ class RecipeController {
             res.render('recipes/edit', {
                 title: 'Edit Recipe',
                 recipes: recipes,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching recipes for editing:', error);
@@ -324,7 +308,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load recipes for editing',
-                studentId: ''
             });
         }
     }
@@ -336,7 +319,6 @@ class RecipeController {
             res.render('recipes/delete', {
                 title: 'Delete Recipe',
                 recipes: recipes,
-                studentId: ''
             });
         } catch (error) {
             console.error('Error fetching recipes for deletion:', error);
@@ -344,7 +326,6 @@ class RecipeController {
                 title: 'Error',
                 statusCode: 500,
                 message: 'Unable to load recipes for deletion',
-                studentId: ''
             });
         }
     }

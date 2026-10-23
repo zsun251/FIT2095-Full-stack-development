@@ -6,7 +6,6 @@ import { Recipe, RecipeRequest, RecipeResponse } from '../../shared/models/recip
 /**
  * Recipe Service - Handles all recipe-related API calls
  * Based on employee-management DatabaseService pattern
- * Student: Zhan Sun ()
  */
 @Injectable({
   providedIn: 'root'

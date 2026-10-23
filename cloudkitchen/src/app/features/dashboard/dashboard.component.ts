@@ -17,8 +17,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
 
   currentUser: User | null = null;
-  readonly STUDENT_NAME = 'Zhan Sun';
-  readonly STUDENT_ID = '';
 
   // Statistics - real-time updates
   totalUsers: number = 0;

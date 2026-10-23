@@ -15,7 +15,6 @@ export class HeaderComponent {
   private router = inject(Router);
 
   currentUser: User | null = null;
-  readonly STUDENT_ID = '';
 
   constructor() {
     // Subscribe to current user changes

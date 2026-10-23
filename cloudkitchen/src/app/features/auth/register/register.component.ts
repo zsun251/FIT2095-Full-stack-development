@@ -98,7 +98,7 @@ export class RegisterComponent implements OnInit {
   }
 
   /**
-   * Custom validator for password strength (matching Assignment 2 logic)
+   * Custom validator for password strength
    */
   private passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) return null;
