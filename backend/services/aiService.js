@@ -1,12 +1,16 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 class AIService {
-    constructor() {
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error('GEMINI_API_KEY is not configured in environment variables');
+    // Create the Gemini client on first use so the server can start without an API key
+    getModel() {
+        if (!this.model) {
+            if (!process.env.GEMINI_API_KEY) {
+                throw new Error('GEMINI_API_KEY is not configured in environment variables');
+            }
+            this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+            this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         }
-        this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        return this.model;
     }
 
     async analyzeRecipeHealth(ingredients) {
@@ -29,7 +33,7 @@ Format your response as JSON with this structure:
   "suggestions": [string array]
 }`;
 
-            const result = await this.model.generateContent(prompt);
+            const result = await this.getModel().generateContent(prompt);
             const response = await result.response;
             const text = response.text();
 

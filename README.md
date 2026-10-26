@@ -86,6 +86,16 @@ npm start
 
 Open http://localhost:3000. The backend serves the built Angular app and the API from the same port.
 
+The API keys are optional. Without them the app runs normally, and only the AI analysis, translation, and text-to-speech features return an error.
+
+### 3. Try it
+
+1. Register an account. Choose a role (`chef`, `manager`, or `admin`), and note the input rules:
+   - Phone numbers use the Australian format, for example `+61 412 345 678`
+   - Passwords need at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character
+2. Log in, add a few inventory items and recipes, then open the dashboard.
+3. With API keys configured, open a recipe to run the AI health analysis, translate it, or generate audio of its instructions.
+
 ## Author
 
 Zhan Sun
