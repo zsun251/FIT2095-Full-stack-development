@@ -10,7 +10,7 @@ require('dotenv').config();
 const connectDB = require('./config/database');
 
 // Middleware
-const { setCurrentUser } = require('./middleware/auth');
+const { getUserFromToken } = require('./middleware/auth');
 
 // Routes (JSON API only)
 const recipeRoutes = require('./routes/recipes');
@@ -53,9 +53,6 @@ app.use('/audio', express.static('public/audio'));
 // Serve Angular frontend static files
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../cloudkitchen/dist/cloudkitchen/browser')));
-
-// User session middleware - sets current user globally
-app.use(setCurrentUser);
 
 // ============================================
 // ROUTES CONFIGURATION
@@ -137,6 +134,15 @@ const io = new Server(server, {
 // Socket.IO event handlers
 const textToSpeechService = require('./services/textToSpeechService');
 const Recipe = require('./models/Recipe');
+
+// Only signed-in chefs can request audio, matching the recipe routes
+io.use(async (socket, next) => {
+    const user = await getUserFromToken(socket.handshake.auth?.token);
+    if (!user || user.role !== 'chef') {
+        return next(new Error('Authentication required'));
+    }
+    next();
+});
 
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);

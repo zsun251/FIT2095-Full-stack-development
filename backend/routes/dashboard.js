@@ -3,9 +3,10 @@ const router = express.Router();
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
 const UserInventory = require('../models/UserInventory');
+const { requireAuth } = require('../middleware/auth');
 
 // GET /api/dashboard/stats - Dashboard statistics API
-router.get('/stats', async (req, res) => {
+router.get('/stats', requireAuth, async (req, res) => {
     try {
         // Get counts from MongoDB
         const [totalUsers, totalRecipes, totalInventory] = await Promise.all([

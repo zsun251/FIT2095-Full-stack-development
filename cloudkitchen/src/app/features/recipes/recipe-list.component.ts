@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RecipeService } from '../../core/services/recipe.service';
@@ -15,6 +16,7 @@ import { Recipe } from '../../shared/models/recipe.model';
 export class RecipeListComponent implements OnInit {
   private recipeService = inject(RecipeService);
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
   private aiService = inject(AiService);
 
   recipes: Recipe[] = [];
@@ -28,7 +30,7 @@ export class RecipeListComponent implements OnInit {
   showAnalysisModal = false;
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.currentUserId = user?.userId || null;
       this.loadRecipes();
     });

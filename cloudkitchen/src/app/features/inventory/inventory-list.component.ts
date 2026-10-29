@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InventoryService } from '../../core/services/inventory.service';
@@ -14,6 +15,7 @@ import { Inventory } from '../../shared/models/inventory.model';
 export class InventoryListComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
 
   inventory: Inventory[] = [];
   expiredItems: Inventory[] = [];
@@ -24,7 +26,7 @@ export class InventoryListComponent implements OnInit {
   currentUserId: string | null = null;
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.currentUserId = user?.userId || null;
       this.loadInventory();
     });

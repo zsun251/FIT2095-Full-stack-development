@@ -7,7 +7,6 @@ export interface User {
   fullname: string;
   role: 'admin' | 'chef' | 'manager';
   phone: string;
-  isLoggedIn: boolean;
   lastLoginDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
@@ -30,5 +29,6 @@ export interface AuthResponse {
   success: boolean;
   message: string;
   user?: User;
+  token?: string;
   error?: string;
 }

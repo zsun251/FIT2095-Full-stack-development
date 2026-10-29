@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, DestroyRef, OnInit, OnDestroy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,6 +15,7 @@ import { interval, Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
   private dashboardService = inject(DashboardService);
 
   currentUser: User | null = null;
@@ -30,7 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to current user
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(user => {
       this.currentUser = user;
       if (user) {
         this.loadStatistics();

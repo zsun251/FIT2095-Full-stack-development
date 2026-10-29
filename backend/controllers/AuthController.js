@@ -1,4 +1,14 @@
 const User = require('../models/User');
+const { signToken } = require('../middleware/auth');
+
+// Public fields returned to the client (never the password hash)
+const toPublicUser = (user) => ({
+    userId: user.userId,
+    email: user.email,
+    fullname: user.fullname,
+    role: user.role,
+    phone: user.phone
+});
 
 /**
  * Authentication Controller - JSON API only (for Angular frontend)
@@ -37,22 +47,15 @@ class AuthController {
                 role: role
             });
 
+            newUser.lastLoginDate = new Date();
             await newUser.save();
 
             // Auto-login after registration
-            await newUser.login();
-
             res.json({
                 success: true,
                 message: 'Registration successful!',
-                user: {
-                    userId: newUser.userId,
-                    email: newUser.email,
-                    fullname: newUser.fullname,
-                    role: newUser.role,
-                    phone: newUser.phone,
-                    isLoggedIn: newUser.isLoggedIn
-                }
+                token: signToken(newUser),
+                user: toPublicUser(newUser)
             });
 
         } catch (error) {
@@ -89,7 +92,7 @@ class AuthController {
             }
 
             // Verify password
-            const isPasswordValid = user.comparePassword(password);
+            const isPasswordValid = await user.comparePassword(password);
             if (!isPasswordValid) {
                 return res.json({
                     success: false,
@@ -98,19 +101,14 @@ class AuthController {
             }
 
             // Login
-            await user.login();
+            user.lastLoginDate = new Date();
+            await user.save({ validateModifiedOnly: true });
 
             res.json({
                 success: true,
                 message: 'Login successful!',
-                user: {
-                    userId: user.userId,
-                    email: user.email,
-                    fullname: user.fullname,
-                    role: user.role,
-                    phone: user.phone,
-                    isLoggedIn: user.isLoggedIn
-                }
+                token: signToken(user),
+                user: toPublicUser(user)
             });
 
         } catch (error) {
@@ -124,26 +122,13 @@ class AuthController {
 
     /**
      * POST /api/auth/logout - Logout user
+     * Tokens are stateless, so the client logs out by discarding its token
      */
-    static async postLogoutAPI(req, res) {
-        try {
-            const loggedInUser = await User.findOne({ isLoggedIn: true });
-            if (loggedInUser) {
-                await loggedInUser.logout();
-            }
-
-            res.json({
-                success: true,
-                message: 'Logged out successfully'
-            });
-
-        } catch (error) {
-            console.error('Logout error:', error);
-            res.json({
-                success: false,
-                error: 'Logout failed'
-            });
-        }
+    static postLogoutAPI(_req, res) {
+        res.json({
+            success: true,
+            message: 'Logged out successfully'
+        });
     }
 }
 

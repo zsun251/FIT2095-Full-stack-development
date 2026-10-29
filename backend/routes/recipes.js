@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const RecipeController = require('../controllers/RecipeController');
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+// Recipe features are for chefs only
+router.use(requireAuth, requireRole('chef'));
 
 // JSON API routes for Angular (mounted at /api/recipes in app.js)
 router.get('/', RecipeController.getRecipesAPI);

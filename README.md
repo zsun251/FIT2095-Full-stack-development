@@ -6,7 +6,7 @@ A full-stack recipe and kitchen-inventory management system with AI-assisted fea
 
 - **Recipes**: create, view, edit, and delete recipes with ingredients, instructions, cuisine, difficulty, and prep time
 - **Inventory**: track ingredients with quantity, unit, cost, location, and expiry date
-- **Authentication and roles**: registration and login with role-based access control (`admin`, `chef`, `manager`), enforced by Angular route guards
+- **Authentication and roles**: registration and login with bcrypt-hashed passwords and JWT authentication; role-based access control (`admin`, `chef`, `manager`) is enforced by Express middleware on every API route and Socket.IO connection, and mirrored by Angular route guards
 - **Dashboard**: statistics for recipes and inventory
 - **AI health analysis**: Google Gemini reviews a recipe's ingredients and returns a nutrition and health assessment
 - **Translation**: translate a recipe into other languages with Google Cloud Translation
@@ -30,13 +30,13 @@ cloudkitchen-pro/
 │   ├── app.js                Server entry, routes, Socket.IO
 │   ├── config/               MongoDB connection
 │   ├── controllers/          Auth, recipe, and inventory logic
-│   ├── middleware/           Session user and role-based access control
+│   ├── middleware/           JWT authentication and role checks
 │   ├── models/               Mongoose schemas (User, Recipe, UserInventory)
 │   ├── routes/               API routes
 │   └── services/             Gemini, Translation, Text-to-Speech
 └── cloudkitchen/             Angular frontend
     └── src/app/
-        ├── core/             Services, guards, HTTP interceptor
+        ├── core/             Services, guards, HTTP interceptor (attaches the JWT)
         ├── features/         Auth, dashboard, recipes, inventory
         └── shared/           Header, footer, error page, models
 ```
@@ -58,6 +58,8 @@ cloudkitchen-pro/
 | POST | `/api/translation/recipe/:recipeId` | Translate a recipe |
 | GET | `/api/translation/languages` | Supported languages |
 | Socket.IO | `generate-speech` | Generate recipe audio |
+
+Every endpoint except register, login, logout, and the language list needs an `Authorization: Bearer <token>` header with the token returned by login. Recipe, translation, and audio features are limited to the `chef` role, and chefs can only edit or delete their own recipes.
 
 ## Getting started
 
@@ -95,11 +97,13 @@ cd ..
 ```bash
 cd backend
 npm install
-cp .env.example .env   # optional: fill in your API keys
+cp .env.example .env   # set JWT_SECRET; API keys are optional
 npm run seed
 ```
 
 `npm run seed` creates a demo chef account with sample recipes and inventory items. It is safe to run again: it only replaces the demo account and its own data.
+
+Set `JWT_SECRET` to any long random string (for example the output of `openssl rand -hex 32`). If it is empty, the server uses a random secret, so everyone is logged out when it restarts.
 
 The API keys are optional. Without them the app runs normally, and only the AI analysis, translation, and text-to-speech features return an error. If you use MongoDB Atlas, set `MONGODB_URI` in `.env` to your connection string.
 
@@ -141,7 +145,7 @@ cd cloudkitchen
 npm start
 ```
 
-Open http://localhost:4200. API requests still go to the backend on port 3000.
+Open http://localhost:4200. The dev server proxies API, audio, and Socket.IO requests to the backend on port 3000 (see `proxy.conf.json`).
 
 ## Troubleshooting
 

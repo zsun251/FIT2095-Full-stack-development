@@ -9,8 +9,8 @@ import { User, LoginRequest, RegisterRequest, AuthResponse } from '../../shared/
 export class AuthService {
   private http = inject(HttpClient);
 
-  // API base URL - update this to match your backend
-  private readonly API_URL = 'http://localhost:3000';
+  // API base URL (same origin; the dev server proxies /api to the backend)
+  private readonly API_URL = '';
 
   // Current user state
   private currentUserSubject = new BehaviorSubject<User | null>(null);
@@ -29,14 +29,14 @@ export class AuthService {
    */
   private loadUserFromStorage(): void {
     const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
+    if (storedUser && this.getToken()) {
       try {
         const user = JSON.parse(storedUser);
         this.currentUserSubject.next(user);
         this.isAuthenticated.set(true);
       } catch (error) {
         console.error('Error loading user from storage:', error);
-        localStorage.removeItem('currentUser');
+        this.clearCurrentUser();
       }
     }
   }
@@ -49,8 +49,8 @@ export class AuthService {
   register(registerData: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/api/auth/register`, registerData).pipe(
       tap(response => {
-        if (response.success && response.user) {
-          this.setCurrentUser(response.user);
+        if (response.success && response.user && response.token) {
+          this.setCurrentUser(response.user, response.token);
         }
       }),
       catchError(error => {
@@ -72,8 +72,8 @@ export class AuthService {
   login(loginData: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/api/auth/login`, loginData).pipe(
       tap(response => {
-        if (response.success && response.user) {
-          this.setCurrentUser(response.user);
+        if (response.success && response.user && response.token) {
+          this.setCurrentUser(response.user, response.token);
         }
       }),
       catchError(error => {
@@ -111,20 +111,31 @@ export class AuthService {
   /**
    * Set current user and update authentication state
    * @param user User object
+   * @param token JWT issued by the backend
    */
-  private setCurrentUser(user: User): void {
+  private setCurrentUser(user: User, token: string): void {
     this.currentUserSubject.next(user);
     this.isAuthenticated.set(true);
     localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('authToken', token);
   }
 
   /**
    * Clear current user and authentication state
    */
-  private clearCurrentUser(): void {
+  clearCurrentUser(): void {
     this.currentUserSubject.next(null);
     this.isAuthenticated.set(false);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+  }
+
+  /**
+   * Get the stored JWT
+   * @returns Token or null
+   */
+  getToken(): string | null {
+    return localStorage.getItem('authToken');
   }
 
   /**

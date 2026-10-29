@@ -1,28 +1,30 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 /**
- * Auth Interceptor - Add authentication headers to HTTP requests
- * This interceptor can be extended to add JWT tokens or other auth headers
+ * Auth Interceptor - Attach the JWT to API requests
+ * and send the user back to login when the token is rejected
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // Clone the request and add headers if needed
-  // For now, we're using session-based auth
-  // which uses cookies, so no need to add headers
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  // If you switch to token-based auth, uncomment and modify:
-  // const token = localStorage.getItem('authToken');
-  // if (token) {
-  //   req = req.clone({
-  //     setHeaders: {
-  //       Authorization: `Bearer ${token}`
-  //     }
-  //   });
-  // }
+  const token = authService.getToken();
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
 
-  // Add withCredentials to support session cookies
-  const authReq = req.clone({
-    withCredentials: true
-  });
-
-  return next(authReq);
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Token expired or invalid: clear the stale session (once) and log in again
+      if (error.status === 401 && authService.isLoggedIn()) {
+        authService.clearCurrentUser();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
 };

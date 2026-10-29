@@ -25,7 +25,8 @@ export class SocketService {
   constructor() {
     this.socket = io(this.SOCKET_URL, {
       autoConnect: false,
-      withCredentials: true
+      // Read the token at connect time so it is current after login
+      auth: (cb) => cb({ token: localStorage.getItem('authToken') })
     });
   }
 

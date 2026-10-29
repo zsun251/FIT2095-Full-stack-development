@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     userId: {
@@ -55,10 +56,6 @@ const userSchema = new mongoose.Schema({
             message: 'Phone number must be in format +61 412 345 678 or +61-412-345-678'
         }
     },
-    isLoggedIn: {
-        type: Boolean,
-        default: false
-    },
     lastLoginDate: {
         type: Date
     }
@@ -79,22 +76,16 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-// Simple password comparison (plain text as per instructor guidelines)
+// Hash the password whenever it changes (validation has already run on the plain text)
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+    next();
+});
+
 userSchema.methods.comparePassword = function(candidatePassword) {
-    return candidatePassword === this.password;
-};
-
-// Login method - update MongoDB session status
-userSchema.methods.login = async function() {
-    this.isLoggedIn = true;
-    this.lastLoginDate = new Date();
-    await this.save({ validateModifiedOnly: true });
-};
-
-// Logout method - update MongoDB session status
-userSchema.methods.logout = async function() {
-    this.isLoggedIn = false;
-    await this.save({ validateModifiedOnly: true });
+    return bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);

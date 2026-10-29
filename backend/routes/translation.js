@@ -2,24 +2,14 @@ const express = require('express');
 const router = express.Router();
 const translationService = require('../services/translationService');
 const Recipe = require('../models/Recipe');
-
-// Simple auth middleware - check if user is logged in
-const authenticateToken = async (_req, res, next) => {
-  if (!res.locals.currentUser) {
-    return res.status(401).json({
-      success: false,
-      error: 'Authentication required'
-    });
-  }
-  next();
-};
+const { requireAuth, requireRole } = require('../middleware/auth');
 
 /**
  * @route   POST /api/translation/recipe/:recipeId
  * @desc    Translate a recipe to target language
- * @access  Private
+ * @access  Private (chef)
  */
-router.post('/recipe/:recipeId', authenticateToken, async (req, res) => {
+router.post('/recipe/:recipeId', requireAuth, requireRole('chef'), async (req, res) => {
   try {
     const { recipeId } = req.params;
     const { targetLanguage } = req.body;
