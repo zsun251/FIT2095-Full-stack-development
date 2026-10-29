@@ -14,7 +14,7 @@ export class RecipeService {
   private http = inject(HttpClient);
 
   // API base URL - matches backend configuration
-  private readonly API_URL = 'http://localhost:3000/api/recipes';
+  private readonly API_URL = '/api/recipes';
 
   /**
    * Get all recipes

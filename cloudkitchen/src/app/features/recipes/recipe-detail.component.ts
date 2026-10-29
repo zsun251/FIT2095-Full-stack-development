@@ -189,7 +189,7 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
     const readySub = this.socketService.onSpeechReady().subscribe(data => {
       this.isGeneratingAudio = false;
       this.analyzingTask = null;
-      this.audioUrl = `http://localhost:3000${data.audioUrl}`;
+      this.audioUrl = data.audioUrl;
       this.audioStatus = 'Audio ready';
     });
     this.subscriptions.push(readySub);
