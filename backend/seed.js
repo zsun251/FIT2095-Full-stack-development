@@ -1,7 +1,8 @@
 // ============================================
 // Demo data seeder
-// Creates a demo chef account with sample recipes and inventory.
-// Safe to re-run: only the demo account and its own data are replaced.
+// Creates a demo chef account with sample recipes and inventory,
+// plus a demo manager account to show the role restrictions.
+// Safe to re-run: only the demo accounts and their own data are replaced.
 // Usage: npm run seed
 // ============================================
 
@@ -18,6 +19,14 @@ const DEMO_USER = {
     password: 'Demo@1234',
     phone: '+61 412 345 678',
     role: 'chef'
+};
+
+const DEMO_MANAGER = {
+    fullname: 'Demo Manager',
+    email: 'manager@demo.com',
+    password: 'Demo@1234',
+    phone: '+61 412 345 679',
+    role: 'manager'
 };
 
 // Inventory dates must be midnight UTC
@@ -88,15 +97,18 @@ const seed = async () => {
     const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cloudkitchen-pro';
     await mongoose.connect(uri);
 
-    // Replace the demo account and everything it owns
-    const existing = await User.findOne({ email: DEMO_USER.email });
-    if (existing) {
-        await Recipe.deleteMany({ userId: existing.userId });
-        await UserInventory.deleteMany({ userId: existing.userId });
-        await existing.deleteOne();
+    // Replace the demo accounts and everything they own
+    for (const demo of [DEMO_USER, DEMO_MANAGER]) {
+        const existing = await User.findOne({ email: demo.email });
+        if (existing) {
+            await Recipe.deleteMany({ userId: existing.userId });
+            await UserInventory.deleteMany({ userId: existing.userId });
+            await existing.deleteOne();
+        }
     }
 
     const user = await new User(DEMO_USER).save();
+    await new User(DEMO_MANAGER).save();
 
     // Save one at a time so the generated IDs don't collide
     for (const recipe of recipes) {
@@ -107,7 +119,7 @@ const seed = async () => {
     }
 
     console.log(`Seeded ${recipes.length} recipes and ${inventory.length} inventory items`);
-    console.log(`Log in with ${DEMO_USER.email} / ${DEMO_USER.password}`);
+    console.log(`Log in with ${DEMO_USER.email} / ${DEMO_USER.password} (chef) or ${DEMO_MANAGER.email} / ${DEMO_MANAGER.password} (manager)`);
     await mongoose.disconnect();
 };
 

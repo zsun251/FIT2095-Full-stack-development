@@ -101,7 +101,7 @@ cp .env.example .env   # set JWT_SECRET; API keys are optional
 npm run seed
 ```
 
-`npm run seed` creates a demo chef account with sample recipes and inventory items. It is safe to run again: it only replaces the demo account and its own data.
+`npm run seed` creates a demo chef account with sample recipes and inventory items, plus a demo manager account. It is safe to run again: it only replaces the demo accounts and their own data.
 
 Set `JWT_SECRET` to any long random string (for example the output of `openssl rand -hex 32`). If it is empty, the server uses a random secret, so everyone is logged out when it restarts.
 
@@ -117,9 +117,10 @@ Wait for `MongoDB Connected`, then open http://localhost:3000. The backend serve
 
 ### 5. Try it
 
-1. Log in with the demo account: `chef@demo.com` / `Demo@1234`.
+1. Log in with the demo chef account: `chef@demo.com` / `Demo@1234`.
 2. Browse the recipes and inventory, then open the dashboard.
 3. With API keys configured, open a recipe to run the AI health analysis, translate it, or generate audio of its instructions.
+4. Log out and log in as the demo manager, `manager@demo.com` / `Demo@1234`, to see the role restrictions: the inventory and dashboard are available, but the recipe features are not.
 
 To create your own account, register and note the input rules:
 
@@ -134,7 +135,7 @@ To create your own account, register and note the input rules:
 | `manager` | ✓ | ✓ | |
 | `admin` | ✓ | ✓ | |
 
-Choose `chef` to try every feature.
+The `chef` role can use every feature. The recipe, translation, and audio APIs return `403 Forbidden` for other roles.
 
 ### Developing the frontend
 
