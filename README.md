@@ -78,10 +78,10 @@ Every endpoint except register, login, logout, and the language list needs an `A
 
 ```bash
 git clone https://github.com/zsun251/FIT2095-Full-stack-development.git
-cd FIT2095-Full-stack-development/Cloudkitchen-pro
+cd FIT2095-Full-stack-development
 ```
 
-All commands below start from this `Cloudkitchen-pro/` folder.
+All commands below start from the repository root.
 
 ### 2. Build the frontend
 
