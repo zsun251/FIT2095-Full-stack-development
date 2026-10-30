@@ -11,8 +11,6 @@
   "author": "Zhan Sun",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/text-to-speech": "^6.3.1",
-    "@google-cloud/translate": "^9.2.1",
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
