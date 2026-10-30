@@ -9,8 +9,8 @@ A full-stack recipe and kitchen-inventory management system with AI-assisted fea
 - **Authentication and roles**: registration and login with bcrypt-hashed passwords and JWT authentication; role-based access control (`admin`, `chef`, `manager`) is enforced by Express middleware on every API route and Socket.IO connection, and mirrored by Angular route guards
 - **Dashboard**: statistics for recipes and inventory
 - **AI health analysis**: Google Gemini reviews a recipe's ingredients and returns a nutrition and health assessment
-- **Translation**: translate a recipe into other languages with Google Cloud Translation
-- **Text-to-speech**: generate an audio version of a recipe's instructions with Google Cloud Text-to-Speech; progress is pushed to the client in real time over **Socket.IO**
+- **Translation**: translate a recipe into other languages with Google Gemini
+- **Text-to-speech**: generate an audio version of a recipe's instructions with Gemini speech generation; progress is pushed to the client in real time over **Socket.IO**
 - **PWA**: installable, with offline asset caching through Angular Service Worker
 
 ## Tech stack
@@ -20,7 +20,7 @@ A full-stack recipe and kitchen-inventory management system with AI-assisted fea
 | Frontend | Angular 20 (standalone components), RxJS, Bootstrap 5, Angular Service Worker |
 | Backend | Node.js, Express 5, REST API, Socket.IO |
 | Database | MongoDB with Mongoose |
-| AI / Cloud | Google Gemini, Google Cloud Translation, Google Cloud Text-to-Speech |
+| AI | Google Gemini (text analysis, translation, and speech generation) |
 
 ## Project structure
 
@@ -72,7 +72,7 @@ Every endpoint except register, login, logout, and the language list needs an `A
   brew install mongodb-community
   brew services start mongodb-community
   ```
-- Optional: a Google Gemini API key and a Google Cloud API key with Translation and Text-to-Speech enabled, for the AI features
+- Optional: a Google Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey), for the AI features
 
 ### 1. Clone the repository
 
@@ -97,7 +97,7 @@ cd ..
 ```bash
 cd backend
 npm install
-cp .env.example .env   # set JWT_SECRET; API keys are optional
+cp .env.example .env   # set JWT_SECRET; the API key is optional
 npm run seed
 ```
 
@@ -105,7 +105,7 @@ npm run seed
 
 Set `JWT_SECRET` to any long random string (for example the output of `openssl rand -hex 32`). If it is empty, the server uses a random secret, so everyone is logged out when it restarts.
 
-The API keys are optional. Without them the app runs normally, and only the AI analysis, translation, and text-to-speech features return an error. If you use MongoDB Atlas, set `MONGODB_URI` in `.env` to your connection string.
+The Gemini API key is optional. Without it the app runs normally, and only the AI analysis, translation, and text-to-speech features return an error. If you use MongoDB Atlas, set `MONGODB_URI` in `.env` to your connection string.
 
 ### 4. Start the server
 
@@ -119,7 +119,7 @@ Wait for `MongoDB Connected`, then open http://localhost:3000. The backend serve
 
 1. Log in with the demo chef account: `chef@demo.com` / `Demo@1234`.
 2. Browse the recipes and inventory, then open the dashboard.
-3. With API keys configured, open a recipe to run the AI health analysis, translate it, or generate audio of its instructions.
+3. With a Gemini API key configured, open a recipe to run the AI health analysis, translate it, or generate audio of its instructions.
 4. Log out and log in as the demo manager, `manager@demo.com` / `Demo@1234`, to see the role restrictions: the inventory and dashboard are available, but the recipe features are not.
 
 To create your own account, register and note the input rules:

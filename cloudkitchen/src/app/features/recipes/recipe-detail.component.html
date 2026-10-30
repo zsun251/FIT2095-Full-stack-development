@@ -97,191 +97,178 @@
             </div>
           </div>
 
-          <!-- Right Column: HD Tasks and Instructions -->
+          <!-- Right Column: AI Assistant and Instructions -->
           <div class="col-md-6">
-            <!-- HD Tasks Card -->
-            <div class="card shadow-sm mb-4">
-              <div class="card-header bg-light">
-                <h5 class="card-title mb-0">HD Tasks</h5>
+            <!-- AI Assistant Card: one tab per AI feature, each result shown in its own tab -->
+            <div class="card shadow-sm mb-4 ai-card">
+              <div class="card-header bg-white pb-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-title mb-0">AI Assistant</h5>
+                  <small class="text-muted">Powered by Google Gemini</small>
+                </div>
+                <ul class="nav nav-underline">
+                  <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'analysis'" (click)="activeTab = 'analysis'">Health Analysis</button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'translate'" (click)="activeTab = 'translate'">Translate</button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link" [class.active]="activeTab === 'listen'" (click)="activeTab = 'listen'">Listen</button>
+                  </li>
+                </ul>
               </div>
               <div class="card-body">
-                <!-- HD Task 1: AI Analysis -->
-                <button
-                  (click)="analyzeHealth()"
-                  class="btn btn-primary btn-lg w-100 mb-3"
-                  [disabled]="analyzingTask === 1">
-                  @if (analyzingTask === 1) {
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Analyzing...
+                <!-- AI Health Analysis -->
+                @if (activeTab === 'analysis') {
+                  @if (!taskResults[1]) {
+                    <p class="text-muted small">Get a health score, concerns, strengths, and improvement ideas based on the ingredients.</p>
+                    <button (click)="analyzeHealth()" class="btn btn-primary w-100" [disabled]="analyzingTask === 1">
+                      @if (analyzingTask === 1) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Analyzing...
+                      } @else {
+                        Analyze health
+                      }
+                    </button>
                   } @else {
-                    HD Task 1: AI Analysis
-                  }
-                </button>
-
-                <!-- HD Task 2: Translation -->
-                <div class="mb-3">
-                  <label for="languageSelect" class="form-label"><strong>Select Language:</strong></label>
-                  <select
-                    id="languageSelect"
-                    class="form-select"
-                    [(ngModel)]="selectedLanguage">
-                    <option value="">Choose a language...</option>
-                    @for (lang of languages; track lang.code) {
-                      <option [value]="lang.code">{{ lang.name }}</option>
-                    }
-                  </select>
-                </div>
-                <button
-                  (click)="translateRecipe()"
-                  class="btn btn-info btn-lg w-100 mb-3"
-                  [disabled]="analyzingTask === 2 || !selectedLanguage">
-                  @if (analyzingTask === 2) {
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Translating...
-                  } @else {
-                    HD Task 2: Translation
-                  }
-                </button>
-
-                <!-- HD Task 3: Text-to-Speech -->
-                <button
-                  (click)="readRecipe()"
-                  class="btn btn-success btn-lg w-100 mb-3"
-                  [disabled]="isGeneratingAudio">
-                  @if (isGeneratingAudio) {
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Generating Audio...
-                  } @else {
-                    HD Task 3: Text-to-Speech
-                  }
-                </button>
-
-                <!-- Audio Status -->
-                @if (audioStatus) {
-                  <div class="alert alert-info small mb-3">
-                    {{ audioStatus }}
-                  </div>
-                }
-
-                <!-- Audio Player -->
-                @if (audioUrl) {
-                  <div class="card mb-3">
-                    <div class="card-body">
+                    <div>
+                      <!-- Health Score -->
                       <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">Audio Player</h6>
-                        <button class="btn btn-sm btn-outline-danger" (click)="stopAudio()">
-                          Close
+                        <div class="d-flex align-items-baseline gap-2">
+                          <span class="health-score">{{ taskResults[1].healthScore }}</span>
+                          <span class="text-muted">/ 100 health score</span>
+                        </div>
+                        <button (click)="analyzeHealth()" class="btn btn-sm btn-outline-secondary" [disabled]="analyzingTask === 1">
+                          @if (analyzingTask === 1) {
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                          }
+                          Re-analyze
                         </button>
                       </div>
-                      <audio controls class="w-100" [src]="audioUrl" autoplay>
-                        Your browser does not support the audio element.
-                      </audio>
-                      <small class="text-muted d-block mt-2">
-                        Listen to the recipe instructions hands-free
-                      </small>
-                    </div>
-                  </div>
-                }
-
-                <!-- AI Analysis Results -->
-                @if (taskResults[1]) {
-                  <div class="mt-4">
-                    <h6 class="text-primary">Health Analysis Results</h6>
-                    <div class="card">
-                      <div class="card-body">
-                        <!-- Health Score -->
-                        <div class="mb-3">
-                          <strong>Health Score:</strong>
-                          <div class="progress mt-2" style="height: 25px;">
-                            <div
-                              [class]="'progress-bar ' + getHealthScoreClass(taskResults[1].healthScore)"
-                              role="progressbar"
-                              [style.width.%]="taskResults[1].healthScore"
-                              [attr.aria-valuenow]="taskResults[1].healthScore"
-                              aria-valuemin="0"
-                              aria-valuemax="100">
-                              <strong>{{ taskResults[1].healthScore }}/100</strong>
-                            </div>
-                          </div>
+                      <div class="progress mb-4" style="height: 8px;">
+                        <div
+                          [class]="'progress-bar ' + getHealthScoreClass(taskResults[1].healthScore)"
+                          role="progressbar"
+                          [style.width.%]="taskResults[1].healthScore"
+                          [attr.aria-valuenow]="taskResults[1].healthScore"
+                          aria-valuemin="0"
+                          aria-valuemax="100">
                         </div>
-
-                        <!-- Concerns -->
-                        @if (taskResults[1].concerns && taskResults[1].concerns.length > 0) {
-                          <div class="mb-3">
-                            <strong class="text-danger">Concerns:</strong>
-                            <ul class="mb-0 mt-1">
-                              @for (concern of taskResults[1].concerns; track concern) {
-                                <li class="text-danger small">{{ concern }}</li>
-                              }
-                            </ul>
-                          </div>
-                        }
-
-                        <!-- Strengths -->
-                        @if (taskResults[1].strengths && taskResults[1].strengths.length > 0) {
-                          <div class="mb-3">
-                            <strong class="text-success">Strengths:</strong>
-                            <ul class="mb-0 mt-1">
-                              @for (strength of taskResults[1].strengths; track strength) {
-                                <li class="text-success small">{{ strength }}</li>
-                              }
-                            </ul>
-                          </div>
-                        }
-
-                        <!-- Suggestions -->
-                        @if (taskResults[1].suggestions && taskResults[1].suggestions.length > 0) {
-                          <div>
-                            <strong class="text-info">Suggestions:</strong>
-                            <ul class="mb-0 mt-1">
-                              @for (suggestion of taskResults[1].suggestions; track suggestion) {
-                                <li class="text-info small">{{ suggestion }}</li>
-                              }
-                            </ul>
-                          </div>
-                        }
                       </div>
-                    </div>
-                  </div>
-                }
 
-                <!-- Translation Results -->
-                @if (translatedRecipe) {
-                  <div class="mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h6 class="text-info mb-0">Translation Results</h6>
-                      <button class="btn btn-sm btn-outline-secondary" (click)="closeTranslation()">Close</button>
-                    </div>
-                    <div class="card">
-                      <div class="card-body">
-                        <!-- Translated Title -->
-                        <div class="mb-3">
-                          <strong>Title:</strong>
-                          <p class="mb-0 mt-1">{{ translatedRecipe.title }}</p>
-                        </div>
-
-                        <!-- Translated Ingredients -->
-                        <div class="mb-3">
-                          <strong>Ingredients:</strong>
-                          <ul class="mt-1 mb-0">
-                            @for (ingredient of translatedRecipe.ingredients; track ingredient) {
-                              <li class="small">{{ ingredient }}</li>
+                      <!-- Concerns -->
+                      @if (taskResults[1].concerns && taskResults[1].concerns.length > 0) {
+                        <div class="result-section border-danger">
+                          <h6 class="text-danger">Concerns</h6>
+                          <ul class="small mb-0">
+                            @for (concern of taskResults[1].concerns; track concern) {
+                              <li>{{ concern }}</li>
                             }
                           </ul>
                         </div>
+                      }
 
-                        <!-- Translated Instructions -->
-                        <div>
-                          <strong>Instructions:</strong>
-                          <ol class="mt-1 mb-0">
-                            @for (instruction of translatedRecipe.instructions; track instruction) {
-                              <li class="small mb-2">{{ instruction }}</li>
+                      <!-- Strengths -->
+                      @if (taskResults[1].strengths && taskResults[1].strengths.length > 0) {
+                        <div class="result-section border-success">
+                          <h6 class="text-success">Strengths</h6>
+                          <ul class="small mb-0">
+                            @for (strength of taskResults[1].strengths; track strength) {
+                              <li>{{ strength }}</li>
                             }
-                          </ol>
+                          </ul>
                         </div>
+                      }
+
+                      <!-- Suggestions -->
+                      @if (taskResults[1].suggestions && taskResults[1].suggestions.length > 0) {
+                        <div class="result-section border-primary">
+                          <h6 class="text-primary">Suggestions</h6>
+                          <ul class="small mb-0">
+                            @for (suggestion of taskResults[1].suggestions; track suggestion) {
+                              <li>{{ suggestion }}</li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    </div>
+                  }
+                }
+
+                <!-- Translation -->
+                @if (activeTab === 'translate') {
+                  <label for="languageSelect" class="form-label small text-muted">Translate the recipe into</label>
+                  <div class="input-group">
+                    <select
+                      id="languageSelect"
+                      class="form-select"
+                      [(ngModel)]="selectedLanguage">
+                      <option value="">Choose a language...</option>
+                      @for (lang of languages; track lang.code) {
+                        <option [value]="lang.code">{{ lang.name }}</option>
+                      }
+                    </select>
+                    <button
+                      (click)="translateRecipe()"
+                      class="btn btn-primary"
+                      [disabled]="analyzingTask === 2 || !selectedLanguage">
+                      @if (analyzingTask === 2) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Translating...
+                      } @else {
+                        Translate
+                      }
+                    </button>
+                  </div>
+
+                  @if (translatedRecipe) {
+                    <div class="mt-4">
+                      <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="mb-0">{{ translatedRecipe.title }}</h5>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="closeTranslation()">Clear</button>
+                      </div>
+
+                      <div class="result-section border-secondary">
+                        <h6>Ingredients</h6>
+                        <ul class="small mb-0">
+                          @for (ingredient of translatedRecipe.ingredients; track ingredient) {
+                            <li>{{ ingredient }}</li>
+                          }
+                        </ul>
+                      </div>
+
+                      <div class="result-section border-secondary">
+                        <h6>Instructions</h6>
+                        <ol class="small mb-0">
+                          @for (instruction of translatedRecipe.instructions; track instruction) {
+                            <li class="mb-1">{{ instruction }}</li>
+                          }
+                        </ol>
                       </div>
                     </div>
-                  </div>
+                  }
+                }
+
+                <!-- Text-to-Speech -->
+                @if (activeTab === 'listen') {
+                  <p class="text-muted small">Listen to the instructions hands-free while you cook.</p>
+                  @if (!audioUrl) {
+                    <button (click)="readRecipe()" class="btn btn-primary w-100" [disabled]="isGeneratingAudio">
+                      @if (isGeneratingAudio) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        {{ audioStatus || 'Generating audio...' }}
+                      } @else {
+                        Generate audio
+                      }
+                    </button>
+                  }
+
+                  @if (audioUrl) {
+                    <audio controls class="w-100" [src]="audioUrl" autoplay>
+                      Your browser does not support the audio element.
+                    </audio>
+                  }
                 }
               </div>
             </div>

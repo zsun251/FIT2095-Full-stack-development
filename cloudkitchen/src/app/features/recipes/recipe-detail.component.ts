@@ -28,6 +28,7 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   error: string | null = null;
   analyzingTask: number | null = null;
   taskResults: { [key: number]: any } = {};
+  activeTab: 'analysis' | 'translate' | 'listen' = 'analysis';
 
   // Translation properties
   languages: Language[] = [];
@@ -215,11 +216,6 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
 
     // Request speech generation via Socket.IO
     this.socketService.generateSpeech(this.recipe.recipeId);
-  }
-
-  stopAudio(): void {
-    this.audioUrl = null;
-    this.audioStatus = '';
   }
 
   formatDate(date: Date): string {

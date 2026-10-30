@@ -1,18 +1,15 @@
-const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs').promises;
 const path = require('path');
 
+const TTS_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent';
+
 /**
- * Text-to-Speech Service - Google Cloud Text-to-Speech API Integration
- * Converts recipe instructions to speech audio
+ * Text-to-Speech Service - Google Gemini speech generation
+ * Converts recipe instructions to speech audio, using the same GEMINI_API_KEY
+ * as the AI health analysis
  */
 class TextToSpeechService {
   constructor() {
-    // Initialize the Text-to-Speech client with API key
-    this.client = new textToSpeech.TextToSpeechClient({
-      apiKey: process.env.GOOGLE_TRANSLATE_API_KEY
-    });
-
     // Ensure audio directory exists
     this.audioDir = path.join(__dirname, '../public/audio');
     this.ensureAudioDirectory();
@@ -27,37 +24,76 @@ class TextToSpeechService {
   }
 
   /**
-   * Convert text to speech and save as MP3 file
+   * Wrap raw 16-bit mono PCM from Gemini in a WAV header so browsers can play it
+   * @param {Buffer} pcm - Raw PCM samples
+   * @param {number} sampleRate - Samples per second
+   * @returns {Buffer} WAV file contents
+   */
+  pcmToWav(pcm, sampleRate) {
+    const header = Buffer.alloc(44);
+    header.write('RIFF', 0);
+    header.writeUInt32LE(36 + pcm.length, 4);
+    header.write('WAVE', 8);
+    header.write('fmt ', 12);
+    header.writeUInt32LE(16, 16);             // fmt chunk size
+    header.writeUInt16LE(1, 20);              // PCM format
+    header.writeUInt16LE(1, 22);              // mono
+    header.writeUInt32LE(sampleRate, 24);
+    header.writeUInt32LE(sampleRate * 2, 28); // byte rate
+    header.writeUInt16LE(2, 32);              // block align
+    header.writeUInt16LE(16, 34);             // bits per sample
+    header.write('data', 36);
+    header.writeUInt32LE(pcm.length, 40);
+    return Buffer.concat([header, pcm]);
+  }
+
+  /**
+   * Convert text to speech and save as a WAV file
    * @param {string} text - Text to convert to speech
    * @param {string} filename - Output filename (without extension)
    * @returns {Promise<Object>} Result with audio file path
    */
   async synthesizeSpeech(text, filename = 'recipe-audio') {
     try {
-      // Construct the request
-      const request = {
-        input: { text: text },
-        voice: {
-          languageCode: 'en-US',
-          name: 'en-US-Standard-C' // Female voice
-        },
-        audioConfig: {
-          audioEncoding: 'MP3',
-          speakingRate: 0.9, // Slightly slower for cooking instructions
-          pitch: 0
-        }
-      };
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('GEMINI_API_KEY is not configured in environment variables');
+      }
 
-      // Perform the text-to-speech request
-      const [response] = await this.client.synthesizeSpeech(request);
+      const response = await fetch(TTS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': process.env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `Read these cooking instructions slowly and clearly: ${text}` }] }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } }
+          }
+        })
+      });
+
+      const body = await response.json();
+      if (!response.ok) {
+        throw new Error(body.error?.message || `Gemini TTS request failed (${response.status})`);
+      }
+
+      const audio = body.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+      if (!audio) {
+        throw new Error('No audio returned by Gemini');
+      }
+
+      // mimeType looks like "audio/L16;codec=pcm;rate=24000"
+      const sampleRate = Number(audio.mimeType.match(/rate=(\d+)/)?.[1] || 24000);
+      const wav = this.pcmToWav(Buffer.from(audio.data, 'base64'), sampleRate);
 
       // Generate unique filename with timestamp
       const timestamp = Date.now();
-      const audioFilename = `${filename}-${timestamp}.mp3`;
+      const audioFilename = `${filename}-${timestamp}.wav`;
       const audioPath = path.join(this.audioDir, audioFilename);
 
-      // Write the binary audio content to a local file
-      await fs.writeFile(audioPath, response.audioContent, 'binary');
+      await fs.writeFile(audioPath, wav);
 
       return {
         success: true,
@@ -107,7 +143,7 @@ class TextToSpeechService {
       const oneHour = 60 * 60 * 1000;
 
       for (const file of files) {
-        if (file.endsWith('.mp3')) {
+        if (file.endsWith('.wav')) {
           const filePath = path.join(this.audioDir, file);
           const stats = await fs.stat(filePath);
           const age = now - stats.mtimeMs;

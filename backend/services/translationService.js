@@ -1,42 +1,23 @@
-const { Translate } = require('@google-cloud/translate').v2;
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 /**
- * Translation Service - Google Cloud Translation API Integration
- * Handles recipe translation to multiple languages
+ * Translation Service - translates recipes with Google Gemini,
+ * so it shares the same GEMINI_API_KEY as the AI health analysis
  */
 class TranslationService {
-  constructor() {
-    // Initialize the Translation client with API key
-    this.translate = new Translate({
-      key: process.env.GOOGLE_TRANSLATE_API_KEY
-    });
-  }
-
-  /**
-   * Translate text to target language
-   * @param {string|string[]} text - Text or array of texts to translate
-   * @param {string} targetLanguage - Target language code (e.g., 'es', 'fr', 'it')
-   * @returns {Promise<Object>} Translation result
-   */
-  async translateText(text, targetLanguage) {
-    try {
-      const [translations] = await this.translate.translate(text, targetLanguage);
-
-      // Ensure translations is always an array
-      const translationArray = Array.isArray(translations) ? translations : [translations];
-
-      return {
-        success: true,
-        translations: translationArray,
-        targetLanguage
-      };
-    } catch (error) {
-      console.error('Translation error:', error);
-      return {
-        success: false,
-        error: error.message || 'Translation failed'
-      };
+  // Create the Gemini client on first use so the server can start without an API key
+  getModel() {
+    if (!this.model) {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('GEMINI_API_KEY is not configured in environment variables');
+      }
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      this.model = genAI.getGenerativeModel({
+        model: 'gemini-2.5-flash',
+        generationConfig: { responseMimeType: 'application/json' }
+      });
     }
+    return this.model;
   }
 
   /**
@@ -47,6 +28,11 @@ class TranslationService {
    */
   async translateRecipe(recipe, targetLanguage) {
     try {
+      const language = this.getSupportedLanguages().find(l => l.code === targetLanguage);
+      if (!language) {
+        throw new Error(`Unsupported language: ${targetLanguage}`);
+      }
+
       // Prepare texts to translate
       const textsToTranslate = [
         recipe.title,
@@ -54,9 +40,17 @@ class TranslationService {
         ...recipe.instructions
       ];
 
-      const [translations] = await this.translate.translate(textsToTranslate, targetLanguage);
+      const prompt = `Translate each string in this JSON array from English to ${language.name}.
+Return only a JSON array of the translated strings, in the same order and with the same length.
 
-      const translationArray = Array.isArray(translations) ? translations : [translations];
+${JSON.stringify(textsToTranslate)}`;
+
+      const result = await this.getModel().generateContent(prompt);
+      const translationArray = JSON.parse(result.response.text());
+
+      if (!Array.isArray(translationArray) || translationArray.length !== textsToTranslate.length) {
+        throw new Error('Invalid AI response structure');
+      }
 
       // Split translations back into title, ingredients, instructions
       const translatedTitle = translationArray[0];
