@@ -121,7 +121,7 @@ export class InventoryListComponent implements OnInit {
   }
 
   getTotalInventoryValue(): number {
-    return this.inventory.reduce((sum, item) => sum + item.cost, 0);
+    return this.inventory.reduce((sum, item) => sum + item.cost * item.quantity, 0);
   }
 
   formatDate(date: Date): string {
